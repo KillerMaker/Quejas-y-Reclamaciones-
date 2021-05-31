@@ -12,11 +12,15 @@ namespace Quejas_y_Reclamaciones.Controllers
     [ApiController]
     public class ProductController : ControllerBase
     {
-        [HttpPost("Eliminar")]
+        [HttpDelete("Eliminar")]
         public string Delete(CProduct product)=> product.Delete();
 
-        [HttpPost("Mostrar")]
-        public List<CProduct> Select(string searchString) => CProduct.Select(searchString);
+        [HttpGet("Mostrar")]
+        public List<CProduct> Get(string searchString) => CProduct.Select(searchString);
+
+        [HttpPost("Insertar")]
+        public string Post(CProduct product) => product.Insert();
+
 
     }
 }

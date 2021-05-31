@@ -47,7 +47,7 @@ namespace Quejas_y_Reclamaciones.Models
 
             _command = new SqlCommand($@"DELETE FROM PRODUCTO WHERE ID_PRODUCTO={id}; 
                                              EXEC ERROR_MESSAGES;", _connection);
-            _command.ExecuteNonQuery();
+            //_command.ExecuteNonQuery();
             _reader = _command.ExecuteReader();
 
             while (_reader.Read())
@@ -63,9 +63,13 @@ namespace Quejas_y_Reclamaciones.Models
             if (_connection.State.Equals(ConnectionState.Closed))
                 _connection.Open();
 
-            _command = new SqlCommand($@"EXEC ={id}; 
-                                             EXEC ERROR_MESSAGES;", _connection);
-            _command.ExecuteNonQuery();
+            _command = new SqlCommand($@"EXEC INSERTA_PRODUCTO
+                                              '{name}',
+                                              '{price}',
+                                              '{state}',
+                                              '{productType}';
+                                         EXEC ERROR_MESSAGES;", _connection);
+            //_command.ExecuteNonQuery();
             _reader = _command.ExecuteReader();
 
             while (_reader.Read())
@@ -96,7 +100,7 @@ namespace Quejas_y_Reclamaciones.Models
             else
                 _command = new SqlCommand($"SELECT * FROM PRODUCTO+{searchString}", _connection);
            
-            _command.ExecuteNonQuery();
+            //_command.ExecuteNonQuery();
             _reader = _command.ExecuteReader();
 
             while (_reader.Read())
