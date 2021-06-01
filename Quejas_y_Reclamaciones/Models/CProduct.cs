@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading;
 using System.Data.SqlClient;
 using Quejas_y_Reclamaciones.Interfaces;
 using System.ComponentModel.DataAnnotations;
 using System.Data;
-using System.Threading.Tasks;
+
 
 namespace Quejas_y_Reclamaciones.Models
 {
@@ -78,6 +77,7 @@ namespace Quejas_y_Reclamaciones.Models
             return message;
         }
 
+
         /// <summary>
         /// Hara un SELECT * de la vista de el objeto en la base de datos
         /// </summary>
@@ -86,38 +86,65 @@ namespace Quejas_y_Reclamaciones.Models
         /// <returns>La lista de objetos provenientes de la Base de datos</returns>
         public static List<CProduct> Select(string searchString = null)
         {
-            _connection = new SqlConnection("Data Source=DESKTOP-7V51383\\SQLEXPRESS;Initial Catalog=Quejas&Reclamaciones;Integrated Security=True");
+            try
+            {
+                _connection = new SqlConnection("Data Source=DESKTOP-7V51383\\SQLEXPRESS;Initial Catalog=Quejas&Reclamaciones;Integrated Security=True");
+
+                int idProduct = 0;
+                int? nullableIdProduct = null;
+                List<CProduct> products = new List<CProduct>();
+
+                if (_connection.State.Equals(ConnectionState.Closed))
+                    _connection.Open();
+
+                if (searchString == null)
+                    _command = new SqlCommand($"SELECT * FROM PRODUCTO", _connection);
+                else
+                    _command = new SqlCommand($"SELECT * FROM PRODUCTO+{searchString}", _connection);
+
+                //_command.ExecuteNonQuery();
+                _reader = _command.ExecuteReader();
+
+                while (_reader.Read())
+                {
+                    if (int.TryParse(_reader["ID_PRODUCTO"].ToString(), out idProduct))
+                    {
+                        idProduct = int.Parse(_reader["ID_PRODUCTO"].ToString());
+                        nullableIdProduct = idProduct;
+                    }
+
+                    products.Add(new CProduct(nullableIdProduct, _reader["NOMBRE_PRODUCTO"].ToString(), decimal.Parse(_reader["PRECIO_PRODUCTO"].ToString()), int.Parse(_reader["ID_ESTADO"].ToString()), int.Parse(_reader["ID_TIPO_PRODUCTO"].ToString())));
+                }
+                return products;
+            }
+            catch(Exception ex)
+            {
+                throw new NotSupportedException(ex.Message);
+            }
             
-            int idProduct=0;
-            int? nullableIdProduct=null;
-            List<CProduct> products = new List<CProduct>();
+            
+        }
+        public string Update()
+        {
+            string message = "";
 
             if (_connection.State.Equals(ConnectionState.Closed))
                 _connection.Open();
 
-            if(searchString== null)
-                _command = new SqlCommand($"SELECT * FROM PRODUCTO", _connection);
-            else
-                _command = new SqlCommand($"SELECT * FROM PRODUCTO+{searchString}", _connection);
-           
+            _command = new SqlCommand($@"UPDATE PRODUCTO SET 
+                                                NOMBRE_PRODUCTO = '{name}',
+                                                PRECIO_PRODUCTO = {price},
+                                                ID_ESTADO = {state},
+                                                ID_TIPO_PRODUCTO = {productType}
+                                                WHERE ID_PRODUCTO = {id};
+                                       EXEC ERROR_MESSAGES;", _connection);
             //_command.ExecuteNonQuery();
             _reader = _command.ExecuteReader();
 
             while (_reader.Read())
-            {  
-                if (int.TryParse(_reader["ID_PRODUCTO"].ToString(), out idProduct))
-                {
-                    idProduct = int.Parse(_reader["ID_PRODUCTO"].ToString());
-                    nullableIdProduct = idProduct;
-                }
-                
-                products.Add(new CProduct(nullableIdProduct, _reader["NOMBRE_PRODUCTO"].ToString(), decimal.Parse(_reader["PRECIO_PRODUCTO"].ToString()), int.Parse(_reader["ID_ESTADO"].ToString()), int.Parse(_reader["ID_TIPO_PRODUCTO"].ToString())));
-            }
-            return products;
-        }
-        public string Update()
-        {
-            throw new NotImplementedException();
+                message = _reader["Text"].ToString();
+
+            return message;
         }
 
     }

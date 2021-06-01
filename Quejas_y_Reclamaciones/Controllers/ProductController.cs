@@ -21,6 +21,9 @@ namespace Quejas_y_Reclamaciones.Controllers
         [HttpPost("Insertar")]
         public string Post(CProduct product) => product.Insert();
 
+        [HttpPut("Actualizar")]
+        public string Put(CProduct product) => product.Update();
+
 
     }
 }
