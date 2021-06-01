@@ -39,42 +39,57 @@ namespace Quejas_y_Reclamaciones.Models
 
         public string Delete()
         {
-            string message="";
+            try
+            {
+                string message = "";
 
-            if (_connection.State.Equals(ConnectionState.Closed))
-                _connection.Open();
+                if (_connection.State.Equals(ConnectionState.Closed))
+                    _connection.Open();
 
-            _command = new SqlCommand($@"DELETE FROM PRODUCTO WHERE ID_PRODUCTO={id}; 
+                _command = new SqlCommand($@"DELETE FROM PRODUCTO WHERE ID_PRODUCTO={id}; 
                                              EXEC ERROR_MESSAGES;", _connection);
-            //_command.ExecuteNonQuery();
-            _reader = _command.ExecuteReader();
+                //_command.ExecuteNonQuery();
+                _reader = _command.ExecuteReader();
 
-            while (_reader.Read())
-                message = _reader["Text"].ToString();
+                while (_reader.Read())
+                    message = _reader["Text"].ToString();
 
-            return message;
+                return message;
+            }
+            catch (Exception ex)
+            {
+                throw new NotSupportedException(ex.Message);
+            }
+
         }
 
         public string Insert()
         {
-            string message = "";
+            try
+            {
+                string message = "";
 
-            if (_connection.State.Equals(ConnectionState.Closed))
-                _connection.Open();
+                if (_connection.State.Equals(ConnectionState.Closed))
+                    _connection.Open();
 
-            _command = new SqlCommand($@"EXEC INSERTA_PRODUCTO
+                _command = new SqlCommand($@"EXEC INSERTA_PRODUCTO
                                               '{name}',
                                               '{price}',
                                               '{state}',
                                               '{productType}';
                                          EXEC ERROR_MESSAGES;", _connection);
-            //_command.ExecuteNonQuery();
-            _reader = _command.ExecuteReader();
+                //_command.ExecuteNonQuery();
+                _reader = _command.ExecuteReader();
 
-            while (_reader.Read())
-                message = _reader["Text"].ToString();
+                while (_reader.Read())
+                    message = _reader["Text"].ToString();
 
-            return message;
+                return message;
+            }
+            catch (Exception ex)
+            {
+                throw new NotSupportedException(ex.Message);
+            }
         }
 
 
@@ -121,30 +136,36 @@ namespace Quejas_y_Reclamaciones.Models
             {
                 throw new NotSupportedException(ex.Message);
             }
-            
-            
+
         }
         public string Update()
         {
-            string message = "";
+            try
+            {
+                string message = "";
 
-            if (_connection.State.Equals(ConnectionState.Closed))
-                _connection.Open();
+                if (_connection.State.Equals(ConnectionState.Closed))
+                    _connection.Open();
 
-            _command = new SqlCommand($@"UPDATE PRODUCTO SET 
+                _command = new SqlCommand($@"UPDATE PRODUCTO SET 
                                                 NOMBRE_PRODUCTO = '{name}',
                                                 PRECIO_PRODUCTO = {price},
                                                 ID_ESTADO = {state},
                                                 ID_TIPO_PRODUCTO = {productType}
                                                 WHERE ID_PRODUCTO = {id};
                                        EXEC ERROR_MESSAGES;", _connection);
-            //_command.ExecuteNonQuery();
-            _reader = _command.ExecuteReader();
+                //_command.ExecuteNonQuery();
+                _reader = _command.ExecuteReader();
 
-            while (_reader.Read())
-                message = _reader["Text"].ToString();
+                while (_reader.Read())
+                    message = _reader["Text"].ToString();
 
-            return message;
+                return message;
+            }
+            catch(Exception ex)
+            {
+                throw new NotSupportedException(ex.Message);
+            }
         }
 
     }
