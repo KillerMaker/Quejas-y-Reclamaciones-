@@ -11,7 +11,7 @@ namespace Quejas_y_Reclamaciones.Controllers
     [Route("api/[controller]")]
     [ApiController]
     public class ProductController : ControllerBase
-    {
+    { 
         [HttpDelete("Eliminar")]
         public string Delete(CProduct product)=> product.Delete();
 
@@ -23,7 +23,5 @@ namespace Quejas_y_Reclamaciones.Controllers
 
         [HttpPut("Actualizar")]
         public string Put(CProduct product) => product.Update();
-
-
     }
 }

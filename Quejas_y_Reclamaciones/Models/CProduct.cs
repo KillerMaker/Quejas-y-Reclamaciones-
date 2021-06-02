@@ -115,7 +115,7 @@ namespace Quejas_y_Reclamaciones.Models
                 if (searchString == null)
                     _command = new SqlCommand($"SELECT * FROM PRODUCTO", _connection);
                 else
-                    _command = new SqlCommand($"SELECT * FROM PRODUCTO+{searchString}", _connection);
+                    _command = new SqlCommand($"SELECT * FROM PRODUCTO+ {searchString}", _connection);
 
                 //_command.ExecuteNonQuery();
                 _reader = _command.ExecuteReader();
