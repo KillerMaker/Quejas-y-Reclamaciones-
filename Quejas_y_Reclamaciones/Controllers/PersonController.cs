@@ -21,7 +21,8 @@ namespace Quejas_y_Reclamaciones.Controllers
         [HttpPut("Actualizar")]
         public string put(CPerson person) => person.Update();
 
-        [HttpGet("Mostrar")]
+        [HttpPost("Mostrar")]
         public List<CPerson> get(string searchString) => CPerson.Select(searchString);
+
     }
 }

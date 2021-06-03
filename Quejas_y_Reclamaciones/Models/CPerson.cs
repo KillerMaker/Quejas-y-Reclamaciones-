@@ -51,42 +51,21 @@ namespace Quejas_y_Reclamaciones.Models
         [JsonConstructor]
         public CPerson(int? id,string name, string birthDay, string idCard, string email, string phone, string genre, CUser user=null)
         {
-            if (id.HasValue)
-            {
-                if (user != null)
-                    throw new NotSupportedException("Usuario y Id no pueden tener valor a la vez");
-                else
-                {
-                    this.id = id;
-                    this.name = name;
-                    this.birthDay = birthDay;
-                    this.idCard = idCard;
-                    this.email = email;
-                    this.phone = phone;
-                    this.genre = genre;
-                }
-            }
-            else if(user!=null)
-            {
-                
-                this.name = name;
-                this.birthDay = birthDay;
-                this.idCard = idCard;
-                this.email = email;
-                this.phone = phone;
-                this.genre = genre;
-
-                this.user = user;
-
-            }
-            else
-                throw new NotSupportedException("Al menos Id o Usuario deben contener valor");
+            this.id = id;
+            this.name = name;
+            this.birthDay = birthDay;
+            this.idCard = idCard;
+            this.email = email;
+            this.phone = phone;
+            this.genre = genre;
+            this.user = user;
 
             _connection = new SqlConnection("Data Source=DESKTOP-7V51383\\SQLEXPRESS;Initial Catalog=Quejas&Reclamaciones;Integrated Security=True");
-
         }
         public string Delete()
         {
+            if (id == null)
+                return "Datos de la persona insuficientes";
             try
             {
                 string message = "";
@@ -151,6 +130,8 @@ namespace Quejas_y_Reclamaciones.Models
 
         public string Update()
         {
+            if (id == null)
+                return "Datos de la persona insuficientes";
             try
             {
                 string message = "";
@@ -196,7 +177,7 @@ namespace Quejas_y_Reclamaciones.Models
                 if (searchString == null)
                     _command = new SqlCommand($"SELECT * FROM PERSONA", _connection);
                 else
-                    _command = new SqlCommand($"SELECT * FROM PERSONA+ {searchString}", _connection);
+                    _command = new SqlCommand($"SELECT * FROM PERSONA {searchString}", _connection);
 
                 //_command.ExecuteNonQuery();
                 _reader = _command.ExecuteReader();
