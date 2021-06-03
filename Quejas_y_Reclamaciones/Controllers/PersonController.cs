@@ -16,7 +16,12 @@ namespace Quejas_y_Reclamaciones.Controllers
         public string Post(CPerson person) => person.Insert();
 
         [HttpDelete("Eliminar")]
-        public string delete(CPerson person) => person.Delete();      
+        public string delete(CPerson person) => person.Delete();
 
+        [HttpPut("Actualizar")]
+        public string put(CPerson person) => person.Update();
+
+        [HttpGet("Mostrar")]
+        public List<CPerson> get(string searchString) => CPerson.Select(searchString);
     }
 }

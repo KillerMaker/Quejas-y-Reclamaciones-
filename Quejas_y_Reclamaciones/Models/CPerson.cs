@@ -49,7 +49,7 @@ namespace Quejas_y_Reclamaciones.Models
         //}
         
         [JsonConstructor]
-        public CPerson(int? id,string name, string birthDay, string idCard, string email, string phone, string genre, CUser user)
+        public CPerson(int? id,string name, string birthDay, string idCard, string email, string phone, string genre, CUser user=null)
         {
             if (id.HasValue)
             {
@@ -151,7 +151,73 @@ namespace Quejas_y_Reclamaciones.Models
 
         public string Update()
         {
-            throw new NotImplementedException();
+            try
+            {
+                string message = "";
+
+                if (_connection.State.Equals(ConnectionState.Closed))
+                    _connection.Open();
+
+                _command = new SqlCommand($@"UPDATE PERSONA SET
+                                                    NOMBRE_PERSONA = '{name}',
+                                                    FECHA_NAC_PERSONA = '{birthDay}',
+                                                    CEDULA_PERSONA = '{idCard}',
+                                                    CORREO_PERSONA = '{email}',
+                                                    TELEFONO_PERSONA = '{phone}',
+                                                    GENERO_PERSONA = '{genre}'
+                                                    WHERE ID_PERSONA = {id}
+                                                    
+                                             EXEC ERROR_MESSAGES;", _connection);
+                //_command.ExecuteNonQuery();
+                _reader = _command.ExecuteReader();
+
+                while (_reader.Read())
+                    message = _reader["Text"].ToString();
+
+                return message;
+            }
+            catch (Exception ex)
+            {
+                throw new NotSupportedException(ex.Message);
+            }
+        }
+
+        public static List<CPerson> Select(string searchString)
+        {
+            try
+            {
+                _connection = new SqlConnection("Data Source=DESKTOP-7V51383\\SQLEXPRESS;Initial Catalog=Quejas&Reclamaciones;Integrated Security=True");
+
+                List<CPerson> people = new List<CPerson>();
+
+                if (_connection.State.Equals(ConnectionState.Closed))
+                    _connection.Open();
+
+                if (searchString == null)
+                    _command = new SqlCommand($"SELECT * FROM PERSONA", _connection);
+                else
+                    _command = new SqlCommand($"SELECT * FROM PERSONA+ {searchString}", _connection);
+
+                //_command.ExecuteNonQuery();
+                _reader = _command.ExecuteReader();
+
+                while (_reader.Read())
+                {
+                    people.Add(new CPerson(int.Parse(_reader["ID_PERSONA"].ToString()),
+                                            _reader["NOMBRE_PERSONA"].ToString(),
+                                            _reader["FECHA_NAC_PERSONA"].ToString(),
+                                            _reader["CEDULA_PERSONA"].ToString(),
+                                            _reader["CORREO_PERSONA"].ToString(),
+                                            _reader["TELEFONO_PERSONA"].ToString(),
+                                            _reader["GENERO_PERSONA"].ToString())         
+                                );
+                }
+                return people;
+            }
+            catch (Exception ex)
+            {
+                throw new NotSupportedException(ex.Message);
+            }
         }
     }
 }

@@ -128,7 +128,12 @@ namespace Quejas_y_Reclamaciones.Models
                         nullableIdProduct = idProduct;
                     }
 
-                    products.Add(new CProduct(nullableIdProduct, _reader["NOMBRE_PRODUCTO"].ToString(), decimal.Parse(_reader["PRECIO_PRODUCTO"].ToString()), int.Parse(_reader["ID_ESTADO"].ToString()), int.Parse(_reader["ID_TIPO_PRODUCTO"].ToString())));
+                    products.Add(new CProduct(nullableIdProduct, 
+                                    _reader["NOMBRE_PRODUCTO"].ToString(), 
+                                    decimal.Parse(_reader["PRECIO_PRODUCTO"].ToString()),
+                                    int.Parse(_reader["ID_ESTADO"].ToString()), 
+                                    int.Parse(_reader["ID_TIPO_PRODUCTO"].ToString()))
+                        );
                 }
                 return products;
             }
