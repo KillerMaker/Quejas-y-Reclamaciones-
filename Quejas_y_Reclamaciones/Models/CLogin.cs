@@ -21,7 +21,7 @@ namespace Quejas_y_Reclamaciones.Models
             this.userName = userName;
             this.password = password;
 
-            _connection = new SqlConnection("Data Source=DESKTOP-7V51383\\SQLEXPRESS;Initial Catalog=Quejas&Reclamaciones;Integrated Security=True");
+            _connection = new SqlConnection("Data Source=DESKTOP-T76LFOU;Initial Catalog=Quejas&Reclamaciones;Integrated Security=True");
 
         }
         public object loginIntoApplication()
