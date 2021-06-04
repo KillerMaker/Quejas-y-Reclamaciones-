@@ -41,7 +41,7 @@ namespace Quejas_y_Reclamaciones.Models
                     state = int.Parse(_reader["EXISTENCIA_USUARIO"].ToString());
 
                 if (state == 0)
-                    return new NotSupportedException("Usuario Invalido");
+                    throw new NotSupportedException("Usuario Invalido");
                 else 
                 {
                     _connection.Close();
@@ -56,7 +56,7 @@ namespace Quejas_y_Reclamaciones.Models
                         state = int.Parse(_reader["USUARIO_VALIDO"].ToString());
 
                     if (state == 0)
-                        return new NotSupportedException("Clave Incorrecta");
+                        throw new NotSupportedException("Clave Incorrecta");
                     else 
                     {
                         _connection.Close();
