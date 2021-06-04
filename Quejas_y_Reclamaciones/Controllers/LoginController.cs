@@ -10,7 +10,7 @@ namespace Quejas_y_Reclamaciones.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class LoginController : ControllerBase
+     public class LoginController : ControllerBase
     {
         [HttpPost]
         public object Post(CLogin login) => login.loginIntoApplication();

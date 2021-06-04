@@ -21,7 +21,7 @@ namespace Quejas_y_Reclamaciones.Models
             this.userName = userName;
             this.password = password;
 
-            _connection = new SqlConnection("Data Source=DESKTOP-T76LFOU;Initial Catalog=Quejas&Reclamaciones;Integrated Security=True");
+            _connection = new SqlConnection("Data Source = DESKTOP - 7V51383\\SQLEXPRESS; Initial Catalog = Quejas & Reclamaciones; Integrated Security = True");
 
         }
         public object loginIntoApplication()
@@ -41,7 +41,7 @@ namespace Quejas_y_Reclamaciones.Models
                     state = int.Parse(_reader["EXISTENCIA_USUARIO"].ToString());
 
                 if (state == 0)
-                    return $"Nombre de Usuario no Existe {userName} ";
+                    return new NotSupportedException("Usuario Invalido");
                 else 
                 {
                     _connection.Close();
@@ -56,7 +56,7 @@ namespace Quejas_y_Reclamaciones.Models
                         state = int.Parse(_reader["USUARIO_VALIDO"].ToString());
 
                     if (state == 0)
-                        return "Clave Incorrecta";
+                        return new NotSupportedException("Clave Incorrecta");
                     else 
                     {
                         _connection.Close();
@@ -79,7 +79,6 @@ namespace Quejas_y_Reclamaciones.Models
                                                           _reader["NOMBRE_USUARIO"].ToString(),
                                                           _reader["CLAVE_USUARIO"].ToString(),
                                                           int.Parse(_reader["ID_TIPO_USUARIO"].ToString())));
-
                     }    
                 }
                 return "";   
