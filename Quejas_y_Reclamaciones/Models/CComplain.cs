@@ -18,9 +18,9 @@ namespace Quejas_y_Reclamaciones.Models
         public int idComplainType { get; set; }
         public int idState { get; set; }
 
-        private SqlConnection _connection;
-        private SqlCommand _command;
-        private SqlDataReader _reader;
+        private static SqlConnection _connection;
+        private static SqlCommand _command;
+        private static SqlDataReader _reader;
 
         public CComplain(int? id, int idPerson, int idDepartment, string date, string description, int idComplainType,int idState )
         {
@@ -32,7 +32,7 @@ namespace Quejas_y_Reclamaciones.Models
             this.idComplainType = idComplainType;
             this.idState = idState;
 
-            _command = new SqlCommand("Data Source = DESKTOP-7V51383\\SQLEXPRESS; Initial Catalog = Quejas&Reclamaciones; Integrated Security = True");
+            _connection = new SqlConnection("Data Source = DESKTOP-7V51383\\SQLEXPRESS; Initial Catalog = Quejas&Reclamaciones; Integrated Security = True");
         }
 
         public string Insert()
@@ -40,17 +40,17 @@ namespace Quejas_y_Reclamaciones.Models
             string message = "";
             try
             {
-                if (_connection.State.Equals(ConnectionState.Closed))
+                if (_connection.State==ConnectionState.Closed)
                     _connection.Open();
 
                 _command = new SqlCommand($@"EXEC INSERTA_QUEJA
-                                            {idPerson},
-                                            {idDepartment},
-                                           '{date}',
-                                           '{description}',
-                                            {idComplainType},
-                                            {idState};
-                                        EXEC ERROR_MESSAGES;", _connection);
+                                                {idPerson},
+                                                {idDepartment},
+                                               '{date}',
+                                               '{description}',
+                                                {idComplainType},
+                                                {idState};
+                                            EXEC ERROR_MESSAGES;", _connection);
 
                 _reader = _command.ExecuteReader();
 
@@ -78,7 +78,7 @@ namespace Quejas_y_Reclamaciones.Models
                                                 ID_TIPO_QUEJA = {idComplainType},
                                                 ID_ESTADO = {idState}
                                                 WHERE ID_QUEJA = {id};
-                                        EXEC ERROR_MESSAGES;", _connection);
+                                            EXEC ERROR_MESSAGES;", _connection);
 
                 _reader = _command.ExecuteReader();
 
@@ -95,7 +95,67 @@ namespace Quejas_y_Reclamaciones.Models
 
         public string Delete()
         {
-            throw new NotImplementedException();
+            string message = "";
+            try
+            {
+                if (_connection.State.Equals(ConnectionState.Closed))
+                    _connection.Open();
+
+                _command = new SqlCommand($@"DELETE FROM QUEJA WHERE ID_QUEJA ={id}
+                                            EXEC ERROR_MESSAGES;", _connection);
+
+                _reader = _command.ExecuteReader();
+
+                while (_reader.Read())
+                    message = _reader["text"].ToString();
+
+                return message;
+            }
+            catch (Exception ex)
+            {
+                throw new NotSupportedException(ex.Message);
+            }
+        }
+
+        public static List<CComplain> Select(string searchString)
+        {
+            try
+            {
+                
+
+                List<CComplain> complains = new List<CComplain>();
+                _connection = new SqlConnection("Data Source = DESKTOP-7V51383\\SQLEXPRESS; Initial Catalog = Quejas&Reclamaciones; Integrated Security = True");
+                
+                if (_connection.State.Equals(ConnectionState.Closed))
+                    _connection.Open();
+
+                if (searchString == null)
+                    _command = new SqlCommand("SELECT * FROM VISTA_QUEJA", _connection);
+                else
+                    _command = new SqlCommand($"SELECT * FROM VISTA_QUEJA {searchString}", _connection);
+
+                _reader = _command.ExecuteReader();
+
+                while (_reader.Read())
+                    complains.Add(new CComplain(
+                                  int.Parse(_reader["ID_QUEJA"].ToString()),
+                                  int.Parse(_reader["ID_PERSONA"].ToString()),
+                                  int.Parse(_reader["ID_DEPARTAMENTO"].ToString()),
+                                  _reader["FECHA_QUEJA"].ToString(),
+                                  _reader["DESCRIPCION_QUEJA"].ToString(),
+                                  int.Parse(_reader["ID_TIPO_QUEJA"].ToString()),
+                                  int.Parse(_reader["ID_ESTADO"].ToString())));
+
+                if (complains.Count != 0)
+                    return complains;
+                else
+                    throw new NotSupportedException("Select sin resultados");
+            }
+            catch(Exception ex)
+            {
+                throw new NotSupportedException(ex.Message);
+            }
+            
         }
     }
 }
