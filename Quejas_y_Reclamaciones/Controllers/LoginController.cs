@@ -13,6 +13,6 @@ namespace Quejas_y_Reclamaciones.Controllers
      public class LoginController : ControllerBase
     {
         [HttpPost]
-        public object Post(CLogin login) => login.loginIntoApplication();
+        public CPerson Post(CLogin login) => login.loginIntoApplication();
     }
 }

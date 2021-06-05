@@ -12,6 +12,7 @@ namespace Quejas_y_Reclamaciones.Models
     {
         public string userName { get; set; }
         public string password { get; set; }
+
         private SqlConnection _connection;
         private SqlCommand _command;
         private SqlDataReader _reader;
@@ -21,10 +22,10 @@ namespace Quejas_y_Reclamaciones.Models
             this.userName = userName;
             this.password = password;
 
-            _connection = new SqlConnection("Data Source = DESKTOP - 7V51383\\SQLEXPRESS; Initial Catalog = Quejas & Reclamaciones; Integrated Security = True");
+            _connection = new SqlConnection("Data Source = DESKTOP-7V51383\\SQLEXPRESS; Initial Catalog = Quejas&Reclamaciones; Integrated Security = True");
 
         }
-        public object loginIntoApplication()
+        public CPerson loginIntoApplication()
         {
             int state = 0;
             try
@@ -81,9 +82,9 @@ namespace Quejas_y_Reclamaciones.Models
                                                           int.Parse(_reader["ID_TIPO_USUARIO"].ToString())));
                     }    
                 }
-                return "";   
+                throw new NotSupportedException();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw new NotSupportedException(ex.Message);
             }

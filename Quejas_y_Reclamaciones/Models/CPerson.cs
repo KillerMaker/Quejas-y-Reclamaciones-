@@ -65,7 +65,7 @@ namespace Quejas_y_Reclamaciones.Models
         public string Delete()
         {
             if (id == null)
-                return "Datos de la persona insuficientes";
+                throw new NotSupportedException("Informacion de Persona Insuficiente (ID)");
             try
             {
                 string message = "";
@@ -92,7 +92,7 @@ namespace Quejas_y_Reclamaciones.Models
         public string Insert()
         {
             if (user==null)
-                return "Datos de usuario Insuficientes";
+                throw new NotSupportedException("Datos de usuario Insuficientes");
             else
             {
                 try
@@ -131,7 +131,7 @@ namespace Quejas_y_Reclamaciones.Models
         public string Update()
         {
             if (id == null)
-                return "Datos de la persona insuficientes";
+                throw new NotSupportedException("Informacion de Persona Insuficiente (ID)");
             try
             {
                 string message = "";
