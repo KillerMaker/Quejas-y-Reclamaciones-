@@ -35,7 +35,7 @@ namespace Quejas_y_Reclamaciones.Models
             _connection = new SqlConnection("Data Source = DESKTOP-7V51383\\SQLEXPRESS; Initial Catalog = Quejas&Reclamaciones; Integrated Security = True");
         }
 
-        public string Insert()
+        public object Insert()
         {
             string message = "";
             try

@@ -89,7 +89,7 @@ namespace Quejas_y_Reclamaciones.Models
             }
         }
 
-        public string Insert()
+        public object Insert()
         {
             if (user==null)
                 throw new NotSupportedException("Datos de usuario Insuficientes");
@@ -97,8 +97,6 @@ namespace Quejas_y_Reclamaciones.Models
             {
                 try
                 {
-                    string message = "";
-
                     if (_connection.State.Equals(ConnectionState.Closed))
                         _connection.Open();
 
@@ -112,14 +110,27 @@ namespace Quejas_y_Reclamaciones.Models
                                                         '{user.userName}',
                                                         '{user.password}',
                                                          {user.userType};
-                                             EXEC ERROR_MESSAGES;", _connection);
+                                                  SELECT * FROM PERSONA P 
+                                                            INNER JOIN USUARIO U ON U.ID_PERSONA = P.ID_PERSONA 
+                                                            WHERE P.ID_PERSONA =(SELECT MAX(ID_PERSONA)FROM PERSONA);", _connection);
                     //_command.ExecuteNonQuery();
                     _reader = _command.ExecuteReader();
 
-                    while (_reader.Read())
-                        message = _reader["Text"].ToString();
+                    CPerson person=null;
 
-                    return message;
+                    while (_reader.Read())
+                      person=  new CPerson(int.Parse(_reader["ID_PERSONA"].ToString()),
+                                        _reader["NOMBRE_PERSONA"].ToString(),
+                                        _reader["FECHA_NAC_PERSONA"].ToString(),
+                                        _reader["CEDULA_PERSONA"].ToString(),
+                                        _reader["CORREO_PERSONA"].ToString(),
+                                        _reader["TELEFONO_PERSONA"].ToString(),
+                                        _reader["GENERO_PERSONA"].ToString(),
+                                        new CUser(int.Parse(_reader["ID_USUARIO"].ToString()),
+                                                  _reader["NOMBRE_USUARIO"].ToString(),
+                                                  _reader["CLAVE_USUARIO"].ToString(),
+                                                 int.Parse(_reader["ID_TIPO_USUARIO"].ToString())));
+                    return person;
                 }
                 catch (Exception ex)
                 {

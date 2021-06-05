@@ -19,7 +19,7 @@ namespace Quejas_y_Reclamaciones.Controllers
         public List<CProduct> Get(string searchString) => CProduct.Select(searchString);
 
         [HttpPost("Insertar")]
-        public string Post(CProduct product) => product.Insert();
+        public object Post(CProduct product) => product.Insert();
 
         [HttpPut("Actualizar")]
         public string Put(CProduct product) => product.Update();

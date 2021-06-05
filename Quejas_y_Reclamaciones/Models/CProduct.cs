@@ -63,7 +63,7 @@ namespace Quejas_y_Reclamaciones.Models
 
         }
 
-        public string Insert()
+        public object Insert()
         {
             try
             {

@@ -13,7 +13,7 @@ namespace Quejas_y_Reclamaciones.Controllers
     public class ComplainController : ControllerBase
     {
         [HttpPost("Insertar")]
-        public string post(CComplain complain) => complain.Insert();
+        public object post(CComplain complain) => complain.Insert();
 
         [HttpPut("Actualizar")]
         public string put(CComplain complain) => complain.Update();

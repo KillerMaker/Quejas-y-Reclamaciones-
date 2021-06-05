@@ -21,7 +21,7 @@ namespace Quejas_y_Reclamaciones.Interfaces
         /// Insertara a Object a su correspondiente tabla en la base de datos
         /// </summary>
         /// <returns>El mensaje proveniente de la base de datos respecto a la accion ejecutada por el metodo</returns>
-        public string Insert();
+        public object Insert();
 
         /// <summary>
         /// Actualiza el elemento en la base de datos que tenga un id que coincida con el de Object.id.

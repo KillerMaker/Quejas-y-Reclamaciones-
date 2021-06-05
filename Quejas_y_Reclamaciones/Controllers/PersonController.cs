@@ -13,7 +13,7 @@ namespace Quejas_y_Reclamaciones.Controllers
     public class PersonController : ControllerBase
     {
         [HttpPost("Insertar")]
-        public string Post(CPerson person) => person.Insert();
+        public object Post(CPerson person) => person.Insert();
 
         [HttpDelete("Eliminar")]
         public string delete(CPerson person) => person.Delete();
