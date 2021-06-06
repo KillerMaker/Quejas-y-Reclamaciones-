@@ -73,7 +73,7 @@ namespace Quejas_y_Reclamaciones.Models
                     _connection.Open();
 
                 _command = new SqlCommand($@"EXEC INSERTA_PRODUCTO
-                                              '{name}',
+                                              '{name.SQLInyectionClearString()}',
                                               '{price}',
                                               '{state}',
                                               '{productType}';
@@ -153,7 +153,7 @@ namespace Quejas_y_Reclamaciones.Models
                     _connection.Open();
 
                 _command = new SqlCommand($@"UPDATE PRODUCTO SET 
-                                                NOMBRE_PRODUCTO = '{name}',
+                                                NOMBRE_PRODUCTO = '{name.SQLInyectionClearString()}',
                                                 PRECIO_PRODUCTO = {price},
                                                 ID_ESTADO = {state},
                                                 ID_TIPO_PRODUCTO = {productType}

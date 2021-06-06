@@ -46,8 +46,8 @@ namespace Quejas_y_Reclamaciones.Models
                 _command = new SqlCommand($@"EXEC INSERTA_QUEJA
                                                 {idPerson},
                                                 {idDepartment},
-                                               '{date}',
-                                               '{description}',
+                                               '{date.SQLInyectionClearString()}',
+                                               '{description.SQLInyectionClearString()}',
                                                 {idComplainType},
                                                 {idState};
                                             EXEC ERROR_MESSAGES;", _connection);
@@ -74,7 +74,7 @@ namespace Quejas_y_Reclamaciones.Models
                     _connection.Open();
 
                 _command = new SqlCommand($@"UPDATE QUEJA SET
-                                                DESCRIPCION_QUEJA = '{description}',
+                                                DESCRIPCION_QUEJA = '{description.SQLInyectionClearString()}',
                                                 ID_TIPO_QUEJA = {idComplainType},
                                                 ID_ESTADO = {idState}
                                                 WHERE ID_QUEJA = {id};

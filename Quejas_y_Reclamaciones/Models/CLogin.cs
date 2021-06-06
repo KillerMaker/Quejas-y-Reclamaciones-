@@ -33,7 +33,7 @@ namespace Quejas_y_Reclamaciones.Models
                 if (_connection.State.Equals(ConnectionState.Closed))
                     _connection.Open();
 
-                _command = new SqlCommand($@"IF EXISTS (SELECT TOP 1 * FROM USUARIO WHERE NOMBRE_USUARIO ='{userName}')
+                _command = new SqlCommand($@"IF EXISTS (SELECT TOP 1 * FROM USUARIO WHERE NOMBRE_USUARIO ='{userName.SQLInyectionClearString()}')
                                                 SELECT 1 AS EXISTENCIA_USUARIO
                                              ELSE
                                                 SELECT 0 AS EXISTENCIA_USUARIO",_connection);
@@ -48,7 +48,7 @@ namespace Quejas_y_Reclamaciones.Models
                     _connection.Close();
                     _connection.Open();
 
-                    _command = new SqlCommand($@"IF EXISTS (SELECT TOP 1 * FROM USUARIO WHERE NOMBRE_USUARIO='{userName}' AND CLAVE_USUARIO ='{password}')
+                    _command = new SqlCommand($@"IF EXISTS (SELECT TOP 1 * FROM USUARIO WHERE NOMBRE_USUARIO='{userName.SQLInyectionClearString()}' AND CLAVE_USUARIO ='{password.SQLInyectionClearString()}')
                                                     SELECT 1 AS USUARIO_VALIDO
                                                  ELSE
                                                     SELECT 0 AS USUARIO_VALIDO",_connection);
@@ -64,7 +64,7 @@ namespace Quejas_y_Reclamaciones.Models
                         _connection.Open();
 
                         _command = new SqlCommand($@"SELECT * FROM PERSONA P INNER JOIN USUARIO U ON U.ID_PERSONA=P.ID_PERSONA
-                                                        WHERE U.NOMBRE_USUARIO='{userName}' AND U.CLAVE_USUARIO='{password}'",_connection);
+                                                        WHERE U.NOMBRE_USUARIO='{userName.SQLInyectionClearString()}' AND U.CLAVE_USUARIO='{password.SQLInyectionClearString()}'",_connection);
                         _reader = _command.ExecuteReader();
 
                         while (_reader.Read())

@@ -10,9 +10,9 @@ namespace Quejas_y_Reclamaciones.Models
 {
     public class CPerson : IEntityInterface<CPerson>
     {
-        private static SqlConnection _connection;
-        private static SqlCommand _command;
-        private static SqlDataReader _reader;
+        protected static SqlConnection _connection;
+        protected static SqlCommand _command;
+        protected static SqlDataReader _reader;
 
         public CUser user { get; set; }
         public int? id { get; set; }
@@ -62,7 +62,7 @@ namespace Quejas_y_Reclamaciones.Models
 
             _connection = new SqlConnection("Data Source=DESKTOP-7V51383\\SQLEXPRESS;Initial Catalog=Quejas&Reclamaciones;Integrated Security=True");
         }
-        public string Delete()
+        public virtual string Delete()
         {
             if (id == null)
                 throw new NotSupportedException("Informacion de Persona Insuficiente (ID)");
@@ -89,7 +89,7 @@ namespace Quejas_y_Reclamaciones.Models
             }
         }
 
-        public object Insert()
+        public virtual object Insert()
         {
             if (user==null)
                 throw new NotSupportedException("Datos de usuario Insuficientes");
@@ -101,14 +101,14 @@ namespace Quejas_y_Reclamaciones.Models
                         _connection.Open();
 
                     _command = new SqlCommand($@"EXEC INSERTA_PERSONA
-                                                        '{name}',
-                                                        '{birthDay}',
-                                                        '{idCard}',
-                                                        '{email}',
-                                                        '{phone}',
-                                                        '{genre}',
-                                                        '{user.userName}',
-                                                        '{user.password}',
+                                                        '{name.SQLInyectionClearString()}',
+                                                        '{birthDay.SQLInyectionClearString()}',
+                                                        '{idCard.SQLInyectionClearString()}',
+                                                        '{email.SQLInyectionClearString()}',
+                                                        '{phone.SQLInyectionClearString()}',
+                                                        '{genre.SQLInyectionClearString()}',
+                                                        '{user.userName.SQLInyectionClearString()}',
+                                                        '{user.password.SQLInyectionClearString()}',
                                                          {user.userType};
                                                   SELECT * FROM PERSONA P 
                                                             INNER JOIN USUARIO U ON U.ID_PERSONA = P.ID_PERSONA 
@@ -139,7 +139,7 @@ namespace Quejas_y_Reclamaciones.Models
             }   
         }
 
-        public string Update()
+        public virtual string Update()
         {
             if (id == null)
                 throw new NotSupportedException("Informacion de Persona Insuficiente (ID)");
@@ -151,12 +151,12 @@ namespace Quejas_y_Reclamaciones.Models
                     _connection.Open();
 
                 _command = new SqlCommand($@"UPDATE PERSONA SET
-                                                    NOMBRE_PERSONA = '{name}',
-                                                    FECHA_NAC_PERSONA = '{birthDay}',
-                                                    CEDULA_PERSONA = '{idCard}',
-                                                    CORREO_PERSONA = '{email}',
-                                                    TELEFONO_PERSONA = '{phone}',
-                                                    GENERO_PERSONA = '{genre}'
+                                                    NOMBRE_PERSONA = '{name.SQLInyectionClearString()}',
+                                                    FECHA_NAC_PERSONA = '{birthDay.SQLInyectionClearString()}',
+                                                    CEDULA_PERSONA = '{idCard.SQLInyectionClearString()}',
+                                                    CORREO_PERSONA = '{email.SQLInyectionClearString()}',
+                                                    TELEFONO_PERSONA = '{phone.SQLInyectionClearString()}',
+                                                    GENERO_PERSONA = '{genre.SQLInyectionClearString()}'
                                                     WHERE ID_PERSONA = {id}
                                                     
                                              EXEC ERROR_MESSAGES;", _connection);

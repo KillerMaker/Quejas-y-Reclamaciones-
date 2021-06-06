@@ -6,6 +6,14 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Quejas_y_Reclamaciones", "Quejas_y_Reclamaciones\Quejas_y_Reclamaciones.csproj", "{03A1B86F-EFBD-4A50-807C-0643602E2F9C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DataBase", "DataBase", "{CAED2331-7C56-48E2-825C-F43582B1D7EF}"
+	ProjectSection(SolutionItems) = preProject
+		..\GestionCaja\GestionCaja\Utilidades\StringExtensions.cs = ..\GestionCaja\GestionCaja\Utilidades\StringExtensions.cs
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Utitility", "Utitility", "{F143FCE8-65C2-49A6-9992-170E452577E3}"
+	ProjectSection(SolutionItems) = preProject
+		..\GestionCaja\GestionCaja\Utilidades\StringExtensions.cs = ..\GestionCaja\GestionCaja\Utilidades\StringExtensions.cs
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

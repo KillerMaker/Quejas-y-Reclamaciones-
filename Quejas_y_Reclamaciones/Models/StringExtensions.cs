@@ -4,13 +4,27 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GestionCaja.Utilidades
+namespace Quejas_y_Reclamaciones
 {
     public static class ExtensionsMethods
     {
         public static string SQLInyectionClearString(this string cadena)
         {
-            string s = cadena.ToUpper().Replace("--", "").Replace("'","").Replace("<","").Replace(">","").Replace("=","").Replace("!","").Replace("*","").Replace("SELECT ","").Replace("UPDATE ","").Replace("DELETE ","").Replace("DROP","").Replace(";","").MayusCadaEspacio();
+            string s = cadena.ToUpper()
+                .Replace("--", "")
+                .Replace("'","")
+                .Replace("<","")
+                .Replace(">","")
+                .Replace("=","")
+                .Replace("!","")
+                .Replace("*","")
+                .Replace("SELECT ","")
+                .Replace("UPDATE ","")
+                .Replace("DELETE ","")
+                .Replace("DROP","")
+                .Replace("CREATE","")
+                .Replace("EXEC","")
+                .Replace(";","").MayusCadaEspacio();
             return s;
         }
         public static string MayusCadaEspacio(this string cadena)
