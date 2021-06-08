@@ -64,8 +64,6 @@ namespace Quejas_y_Reclamaciones.Models
         }
         public virtual string Delete()
         {
-            if (id == null)
-                throw new NotSupportedException("Informacion de Persona Insuficiente (ID)");
             try
             {
                 string message = "";
@@ -91,58 +89,52 @@ namespace Quejas_y_Reclamaciones.Models
 
         public virtual object Insert()
         {
-            if (user==null)
-                throw new NotSupportedException("Datos de usuario Insuficientes");
-            else
+            try
             {
-                try
-                {
-                    if (_connection.State.Equals(ConnectionState.Closed))
-                        _connection.Open();
+                if (_connection.State.Equals(ConnectionState.Closed))
+                    _connection.Open();
 
-                    _command = new SqlCommand($@"EXEC INSERTA_PERSONA
-                                                        '{name.SQLInyectionClearString()}',
-                                                        '{birthDay.SQLInyectionClearString()}',
-                                                        '{idCard.SQLInyectionClearString()}',
-                                                        '{email.SQLInyectionClearString()}',
-                                                        '{phone.SQLInyectionClearString()}',
-                                                        '{genre.SQLInyectionClearString()}',
-                                                        '{user.userName.SQLInyectionClearString()}',
-                                                        '{user.password.SQLInyectionClearString()}',
-                                                         {user.userType};
-                                                  SELECT * FROM PERSONA P 
-                                                            INNER JOIN USUARIO U ON U.ID_PERSONA = P.ID_PERSONA 
-                                                            WHERE P.ID_PERSONA =(SELECT MAX(ID_PERSONA)FROM PERSONA);", _connection);
-                    //_command.ExecuteNonQuery();
-                    _reader = _command.ExecuteReader();
+                _command = new SqlCommand($@"EXEC INSERTA_PERSONA
+                                                    '{name.SQLInyectionClearString()}',
+                                                    '{birthDay.SQLInyectionClearString()}',
+                                                    '{idCard.SQLInyectionClearString()}',
+                                                    '{email.SQLInyectionClearString()}',
+                                                    '{phone.SQLInyectionClearString()}',
+                                                    '{genre.SQLInyectionClearString()}',
+                                                    '{user.userName.SQLInyectionClearString()}',
+                                                    '{user.password.SQLInyectionClearString()}',
+                                                        {user.userType};
+                                                SELECT * FROM PERSONA P 
+                                                        INNER JOIN USUARIO U ON U.ID_PERSONA = P.ID_PERSONA 
+                                                        WHERE P.ID_PERSONA =(SELECT MAX(ID_PERSONA)FROM PERSONA);", _connection);
+                //_command.ExecuteNonQuery();
+                _reader = _command.ExecuteReader();
 
-                    CPerson person=null;
+                CPerson person=null;
 
-                    while (_reader.Read())
-                      person=  new CPerson(int.Parse(_reader["ID_PERSONA"].ToString()),
-                                        _reader["NOMBRE_PERSONA"].ToString(),
-                                        _reader["FECHA_NAC_PERSONA"].ToString(),
-                                        _reader["CEDULA_PERSONA"].ToString(),
-                                        _reader["CORREO_PERSONA"].ToString(),
-                                        _reader["TELEFONO_PERSONA"].ToString(),
-                                        _reader["GENERO_PERSONA"].ToString(),
-                                        new CUser(int.Parse(_reader["ID_USUARIO"].ToString()),
-                                                  _reader["NOMBRE_USUARIO"].ToString(),
-                                                  _reader["CLAVE_USUARIO"].ToString(),
-                                                 int.Parse(_reader["ID_TIPO_USUARIO"].ToString())));
-                    return person;
-                }
-                catch (Exception ex)
-                {
-                    throw new NotSupportedException(ex.Message);
-                }
-            }   
-        }
+                while (_reader.Read())
+                    person=  new CPerson(int.Parse(_reader["ID_PERSONA"].ToString()),
+                                    _reader["NOMBRE_PERSONA"].ToString(),
+                                    _reader["FECHA_NAC_PERSONA"].ToString(),
+                                    _reader["CEDULA_PERSONA"].ToString(),
+                                    _reader["CORREO_PERSONA"].ToString(),
+                                    _reader["TELEFONO_PERSONA"].ToString(),
+                                    _reader["GENERO_PERSONA"].ToString(),
+                                    new CUser(int.Parse(_reader["ID_USUARIO"].ToString()),
+                                                _reader["NOMBRE_USUARIO"].ToString(),
+                                                _reader["CLAVE_USUARIO"].ToString(),
+                                                int.Parse(_reader["ID_TIPO_USUARIO"].ToString())));
+                return person;
+            }
+            catch (Exception ex)
+            {
+                throw new NotSupportedException(ex.Message);
+            }
+        }   
+        
 
         public virtual string Update()
         {
-            if (id == null)
-                throw new NotSupportedException("Informacion de Persona Insuficiente (ID)");
             try
             {
                 string message = "";

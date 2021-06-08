@@ -13,15 +13,39 @@ namespace Quejas_y_Reclamaciones.Controllers
     public class ComplainController : ControllerBase
     {
         [HttpPost("Insertar")]
-        public object post(CComplain complain) => complain.Insert();
+        public IActionResult post(CComplain complain)
+        {
+            if (complain.id.HasValue)
+                return BadRequest("Informacion Redundante (Id)");
+            else
+                return Ok(complain.Insert());
+        }
 
         [HttpPut("Actualizar")]
-        public string put(CComplain complain) => complain.Update();
+        public IActionResult put(CComplain complain)
+        {
+            if (!complain.id.HasValue)
+                return BadRequest("Informacion Insuficiente de la queja (ID)");
+            else
+                return Ok(complain.Update());
+        }
 
         [HttpDelete("Eliminar")]
-        public string delete(CComplain complain) => complain.Delete();
+        public IActionResult delete(CComplain complain)
+        {
+            if (!complain.id.HasValue)
+                return BadRequest("Informacion Insuficiente de la queja (ID)");
+            else
+                return Ok(complain.Delete());
+        }
 
         [HttpGet("Mostrar")]
-        public List<CComplain> get(string searchString) => CComplain.Select(searchString);
+        public IActionResult get(string searchString)
+        {
+            if (CComplain.Select(searchString).Count.Equals(0))
+                return NotFound("Recurso no encontrado");
+            else
+                return Ok(CComplain.Select(searchString));
+        }
     }
 }

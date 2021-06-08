@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Quejas_y_Reclamaciones.Models;
 
+
 namespace Quejas_y_Reclamaciones.Controllers
 {
     [Route("api/[controller]")]
@@ -13,6 +14,23 @@ namespace Quejas_y_Reclamaciones.Controllers
      public class LoginController : ControllerBase
     {
         [HttpPost]
-        public CPerson Post(CLogin login) => login.loginIntoApplication();
+        public IActionResult Post(CLogin login)
+        {
+
+            bool checkUserName = login.CheckUserName();
+            bool checkPassword = login.CheckPassword();
+
+            if (!checkUserName)
+                return NotFound("Usuario Invalido");
+
+            else if (!checkPassword)
+                return NotFound("Clave Incorrecta");
+
+            else if (checkUserName && checkPassword)
+                return Ok(login.loginIntoApplication());
+
+            return NotFound();
+
+        }
     }
 }

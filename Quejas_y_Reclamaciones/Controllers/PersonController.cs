@@ -13,16 +13,41 @@ namespace Quejas_y_Reclamaciones.Controllers
     public class PersonController : ControllerBase
     {
         [HttpPost("Insertar")]
-        public object Post(CPerson person) => person.Insert();
+        public IActionResult Post(CPerson person) 
+        {
+            if (person.user == null)
+                return BadRequest("Informacion de usuario Insuficiente");
+            else
+                return Ok(person.Insert());
+        } 
 
         [HttpDelete("Eliminar")]
-        public string delete(CPerson person) => person.Delete();
+        public IActionResult delete(CPerson person)
+        {
+            if (!person.id.HasValue)
+                return BadRequest("Informacion de busqueda Insuficiente Falta Id");
+            else
+                return Ok(person.Delete());
+
+        }
 
         [HttpPut("Actualizar")]
-        public string put(CPerson person) => person.Update();
+        public IActionResult put(CPerson person)
+        {
+            if (!person.id.HasValue)
+                return BadRequest("Informacion de busqueda Insuficiente Falta Id");
+            else
+                return Ok(person.Update());
+        }
 
-        [HttpPost("Mostrar")]
-        public List<CPerson> get(string searchString) => CPerson.Select(searchString);
+        [HttpGet("Mostrar/{searchString?}")]
+        public IActionResult get(string searchString)
+        {
+            if (CPerson.Select(searchString).Count.Equals(0))
+                return NotFound("Recurso no encontrado");
+            else
+                return Ok(CPerson.Select(searchString));
+        }
 
     }
 }

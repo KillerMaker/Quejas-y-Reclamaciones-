@@ -121,8 +121,6 @@ namespace Quejas_y_Reclamaciones.Models
         {
             try
             {
-                
-
                 List<CComplain> complains = new List<CComplain>();
                 _connection = new SqlConnection("Data Source = DESKTOP-7V51383\\SQLEXPRESS; Initial Catalog = Quejas&Reclamaciones; Integrated Security = True");
                 
@@ -145,11 +143,8 @@ namespace Quejas_y_Reclamaciones.Models
                                   _reader["DESCRIPCION_QUEJA"].ToString(),
                                   int.Parse(_reader["ID_TIPO_QUEJA"].ToString()),
                                   int.Parse(_reader["ID_ESTADO"].ToString())));
+               return complains;
 
-                if (complains.Count != 0)
-                    return complains;
-                else
-                    throw new NotSupportedException("Select sin resultados");
             }
             catch(Exception ex)
             {

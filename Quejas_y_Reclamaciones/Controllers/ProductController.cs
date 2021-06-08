@@ -13,15 +13,40 @@ namespace Quejas_y_Reclamaciones.Controllers
     public class ProductController : ControllerBase
     {   
         [HttpDelete("Eliminar")]
-        public string Delete(CProduct product)=> product.Delete();
+        public IActionResult Delete(CProduct product)
+        {
+            if (!product.id.HasValue)
+                return BadRequest("Informacion de busqueda insuficiente (ID)");
+            else
+                return Ok(product.Delete());
+        }
 
         [HttpGet("Mostrar")]
-        public List<CProduct> Get(string searchString) => CProduct.Select(searchString);
+        public IActionResult Get(string searchString)
+        {
+            if (CProduct.Select(searchString).Count.Equals(0))
+                return NotFound("Recurso no encontrado");
+            else
+                return Ok(CPerson.Select(searchString));
+        }
+
 
         [HttpPost("Insertar")]
-        public object Post(CProduct product) => product.Insert();
+        public IActionResult Post(CProduct product)
+        {
+            if (product.id.HasValue)
+                return BadRequest("Informacion Redundante (ID)");
+            else
+                return Ok(product.Insert());
+        }
 
         [HttpPut("Actualizar")]
-        public string Put(CProduct product) => product.Update();
+        public IActionResult Put(CProduct product)
+        {
+            if (!product.id.HasValue)
+                return BadRequest("Informacion de busqueda insuficiente (ID)");
+            else
+                return Ok(product.Update());
+        }
     }
 }

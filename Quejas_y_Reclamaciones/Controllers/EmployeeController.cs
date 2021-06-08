@@ -13,6 +13,13 @@ namespace Quejas_y_Reclamaciones.Controllers
     public class EmployeeController : ControllerBase
     {
         [HttpPost("Insertar")]
-        public object Post(CEmployee employee) => employee.Insert();
+        public IActionResult Post(CEmployee employee)
+        {
+            if (employee.id.HasValue)
+                return BadRequest("Informacion redundante (ID)");
+            else
+                return Ok(employee.Insert());
+        }
+
     }
 }

@@ -132,9 +132,9 @@ namespace Quejas_y_Reclamaciones.Models
                                     _reader["NOMBRE_PRODUCTO"].ToString(), 
                                     decimal.Parse(_reader["PRECIO_PRODUCTO"].ToString()),
                                     int.Parse(_reader["ID_ESTADO"].ToString()), 
-                                    int.Parse(_reader["ID_TIPO_PRODUCTO"].ToString()))
-                        );
+                                    int.Parse(_reader["ID_TIPO_PRODUCTO"].ToString())));
                 }
+
                 return products;
             }
             catch(Exception ex)

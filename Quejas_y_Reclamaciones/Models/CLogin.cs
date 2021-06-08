@@ -27,67 +27,93 @@ namespace Quejas_y_Reclamaciones.Models
         }
         public CPerson loginIntoApplication()
         {
+            try
+            {
+                _connection.Close();
+                _connection.Open();
+
+                _command = new SqlCommand($@"SELECT * FROM PERSONA P INNER JOIN USUARIO U ON U.ID_PERSONA=P.ID_PERSONA
+                                                WHERE U.NOMBRE_USUARIO='{userName.SQLInyectionClearString()}' AND U.CLAVE_USUARIO='{password.SQLInyectionClearString()}'",_connection);
+                _reader = _command.ExecuteReader();
+
+                CPerson person=null;
+                while (_reader.Read())
+                    person= new CPerson(int.Parse(_reader["ID_PERSONA"].ToString()),
+                                        _reader["NOMBRE_PERSONA"].ToString(),
+                                        _reader["FECHA_NAC_PERSONA"].ToString(),
+                                        _reader["CEDULA_PERSONA"].ToString(),
+                                        _reader["CORREO_PERSONA"].ToString(),
+                                        _reader["TELEFONO_PERSONA"].ToString(),
+                                        _reader["GENERO_PERSONA"].ToString(),
+                                        new CUser(
+                                                    int.Parse(_reader["ID_USUARIO"].ToString()),
+                                                    _reader["NOMBRE_USUARIO"].ToString(),
+                                                    _reader["CLAVE_USUARIO"].ToString(),
+                                                    int.Parse(_reader["ID_TIPO_USUARIO"].ToString())));
+
+                return person;
+            }   
+            catch(Exception ex)
+            {
+                throw new NotSupportedException(ex.Message);
+            }
+        }
+
+        public bool CheckUserName()
+        {
             int state = 0;
             try
             {
-                if (_connection.State.Equals(ConnectionState.Closed))
-                    _connection.Open();
+                _connection.Close();
+                _connection.Open();
 
                 _command = new SqlCommand($@"IF EXISTS (SELECT TOP 1 * FROM USUARIO WHERE NOMBRE_USUARIO ='{userName.SQLInyectionClearString()}')
                                                 SELECT 1 AS EXISTENCIA_USUARIO
                                              ELSE
-                                                SELECT 0 AS EXISTENCIA_USUARIO",_connection);
-                _reader = _command.ExecuteReader();
+                                                SELECT 0 AS EXISTENCIA_USUARIO", _connection);
+                 _reader = _command.ExecuteReader();
                 while (_reader.Read())
                     state = int.Parse(_reader["EXISTENCIA_USUARIO"].ToString());
 
                 if (state == 0)
-                    throw new NotSupportedException("Usuario Invalido");
-                else 
-                {
-                    _connection.Close();
-                    _connection.Open();
+                    return false;
+                else
+                    return true;
 
-                    _command = new SqlCommand($@"IF EXISTS (SELECT TOP 1 * FROM USUARIO WHERE NOMBRE_USUARIO='{userName.SQLInyectionClearString()}' AND CLAVE_USUARIO ='{password.SQLInyectionClearString()}')
-                                                    SELECT 1 AS USUARIO_VALIDO
-                                                 ELSE
-                                                    SELECT 0 AS USUARIO_VALIDO",_connection);
-                    _reader = _command.ExecuteReader();
-                    while (_reader.Read())
-                        state = int.Parse(_reader["USUARIO_VALIDO"].ToString());
 
-                    if (state == 0)
-                        throw new NotSupportedException("Clave Incorrecta");
-                    else 
-                    {
-                        _connection.Close();
-                        _connection.Open();
-
-                        _command = new SqlCommand($@"SELECT * FROM PERSONA P INNER JOIN USUARIO U ON U.ID_PERSONA=P.ID_PERSONA
-                                                        WHERE U.NOMBRE_USUARIO='{userName.SQLInyectionClearString()}' AND U.CLAVE_USUARIO='{password.SQLInyectionClearString()}'",_connection);
-                        _reader = _command.ExecuteReader();
-
-                        while (_reader.Read())
-                            return new CPerson(int.Parse(_reader["ID_PERSONA"].ToString()),
-                                                _reader["NOMBRE_PERSONA"].ToString(),
-                                                _reader["FECHA_NAC_PERSONA"].ToString(),
-                                                _reader["CEDULA_PERSONA"].ToString(),
-                                                _reader["CORREO_PERSONA"].ToString(),
-                                                _reader["TELEFONO_PERSONA"].ToString(),
-                                                _reader["GENERO_PERSONA"].ToString(),
-                                                new CUser(
-                                                          int.Parse(_reader["ID_USUARIO"].ToString()),
-                                                          _reader["NOMBRE_USUARIO"].ToString(),
-                                                          _reader["CLAVE_USUARIO"].ToString(),
-                                                          int.Parse(_reader["ID_TIPO_USUARIO"].ToString())));
-                    }    
-                }
-                throw new NotSupportedException();
             }
             catch (Exception ex)
             {
                 throw new NotSupportedException(ex.Message);
             }
+        }
+        public bool CheckPassword()
+        {
+            try
+            {
+                int state = 0;
+                _connection.Close();
+                _connection.Open();
+
+                _command = new SqlCommand($@"IF EXISTS (SELECT TOP 1 * FROM USUARIO WHERE NOMBRE_USUARIO='{userName.SQLInyectionClearString()}' AND CLAVE_USUARIO ='{password.SQLInyectionClearString()}')
+                                                    SELECT 1 AS USUARIO_VALIDO
+                                                 ELSE
+                                                    SELECT 0 AS USUARIO_VALIDO", _connection);
+                _reader = _command.ExecuteReader();
+                while (_reader.Read())
+                    state = int.Parse(_reader["USUARIO_VALIDO"].ToString());
+
+                if (state == 0)
+                    return false;
+
+                else
+                    return true;
+            }
+            catch (Exception ex)
+            {
+                throw new NotSupportedException(ex.Message);
+            }
+            
         }
     }
 }
