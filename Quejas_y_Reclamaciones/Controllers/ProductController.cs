@@ -18,13 +18,13 @@ namespace Quejas_y_Reclamaciones.Controllers
             if (!product.id.HasValue)
                 return BadRequest("Informacion de busqueda insuficiente (ID)");
             else
-                return Ok(product.Delete());
+                return Ok(product.Delete().Result);
         }
 
         [HttpGet("Mostrar")]
         public IActionResult Get(string searchString)
         {
-            if (CProduct.Select(searchString).Count.Equals(0))
+            if (CProduct.Select(searchString).Result.Count.Equals(0))
                 return NotFound("Recurso no encontrado");
             else
                 return Ok(CPerson.Select(searchString));
@@ -37,7 +37,7 @@ namespace Quejas_y_Reclamaciones.Controllers
             if (product.id.HasValue)
                 return BadRequest("Informacion Redundante (ID)");
             else
-                return Ok(product.Insert());
+                return Ok(product.Insert().Result);
         }
 
         [HttpPut("Actualizar")]
@@ -46,7 +46,7 @@ namespace Quejas_y_Reclamaciones.Controllers
             if (!product.id.HasValue)
                 return BadRequest("Informacion de busqueda insuficiente (ID)");
             else
-                return Ok(product.Update());
+                return Ok(product.Update().Result);
         }
     }
 }

@@ -17,8 +17,8 @@ namespace Quejas_y_Reclamaciones.Controllers
         public IActionResult Post(CLogin login)
         {
 
-            bool checkUserName = login.CheckUserName();
-            bool checkPassword = login.CheckPassword();
+            bool checkUserName =login.CheckUserName().Result;
+            bool checkPassword =login.CheckPassword().Result;
 
             if (!checkUserName)
                 return NotFound("Usuario Invalido");
@@ -27,7 +27,7 @@ namespace Quejas_y_Reclamaciones.Controllers
                 return NotFound("Clave Incorrecta");
 
             else if (checkUserName && checkPassword)
-                return Ok(login.loginIntoApplication());
+                return Ok(login.loginIntoApplication().Result);
 
             return NotFound();
 

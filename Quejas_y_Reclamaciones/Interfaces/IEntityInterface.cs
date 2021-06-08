@@ -21,17 +21,17 @@ namespace Quejas_y_Reclamaciones.Interfaces
         /// Insertara a Object a su correspondiente tabla en la base de datos
         /// </summary>
         /// <returns>El mensaje proveniente de la base de datos respecto a la accion ejecutada por el metodo</returns>
-        public object Insert();
+        public Task<object> Insert();
 
         /// <summary>
         /// Actualiza el elemento en la base de datos que tenga un id que coincida con el de Object.id.
         /// </summary>
         /// <returns>El mensaje proveniente de la base de datos respecto a la accion ejecutada por el metodo</returns>
-        public string Update();
+        public Task<string> Update();
         /// <summary>
         /// Eliminara de la base de datos el elemento que coincida con el id en la respectiva tabla en la base de datos.
         /// </summary>
         /// <returns>El mensaje proveniente de la base de datos respecto a la accion ejecutada por el metodo</returns>
-        public string Delete();  
+        public Task<string> Delete();  
     }
 }

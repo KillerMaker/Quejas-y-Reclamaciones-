@@ -15,39 +15,50 @@ namespace Quejas_y_Reclamaciones.Models
             : base(id, name, birthDay, idCard, email, phone, genre, user) =>this.idDepartment=idDepartment;
 
 
-        public override string Update()
+        public async override Task<string> Update()
         {
-            string message = "";
-            try 
-            { 
-                base.Update();
 
+           await base.Update();
+
+            var task = new Task<string>(()=>
+            {
+                string message = "";
+                try
+                {
+                    _connection.Close();
+                    _connection.Open();
+
+                    _command = new SqlCommand($@"UPDATE PERSONA_DEPARTAMENTO SET 
+                                            ID_DEPARTAMENTO={idDepartment}
+                                            WHERE ID_PERSONA ={id}
+                                            EXEC ERROR_MESSAGES", _connection);
+
+                    _reader = _command.ExecuteReader();
+
+                    while (_reader.Read())
+                        message = _reader["Text"].ToString();
+
+                    return message;
+                }
+                catch (Exception ex)
+                {
+                    throw new NotSupportedException(ex.Message);
+                }
+            });
+
+            task.Start();
+
+            return await task;
+            
+        }
+        public async override  Task<object> Insert()
+        {
+            var task = new Task<object>(()=> 
+            {
                 if (_connection.State.Equals(ConnectionState.Closed))
                     _connection.Open();
 
-                _command = new SqlCommand($@"UPDATE PERSONA_DEPARTAMENTO SET 
-                                                ID_DEPARTAMENTO={idDepartment}
-                                             WHERE ID_PERSONA ={id}
-                                             EXEC ERROR_MESSAGES", _connection);
-
-                _reader = _command.ExecuteReader();
-
-                while (_reader.Read())
-                    message = _reader["Text"].ToString();
-
-                return message;
-            }
-            catch(Exception ex)
-            {
-                throw new NotSupportedException(ex.Message);
-            }
-        }
-        public override object Insert()
-        {
-            if (_connection.State.Equals(ConnectionState.Closed))
-                _connection.Open();
-
-            _command = new SqlCommand($@"EXEC INSERTA_EMPLEADO
+                _command = new SqlCommand($@"EXEC INSERTA_EMPLEADO
                                               '{name}',
                                               '{birthDay}',
                                               '{idCard}',
@@ -61,32 +72,37 @@ namespace Quejas_y_Reclamaciones.Models
                                         SELECT * FROM VISTA_EMPLEADO 
                                               WHERE ID_PERSONA=(SELECT MAX (ID_PERSONA) FROM PERSONA);", _connection);
 
-            _reader = _command.ExecuteReader();
+                _reader = _command.ExecuteReader();
 
-            CEmployee employee = null;
+                CEmployee employee = null;
 
-            while (_reader.Read())
-                employee= new CEmployee(
-                                     int.Parse(_reader["ID_PERSONA"].ToString()),
-                                     _reader["NOMBRE_PERSONA"].ToString(),
-                                     _reader["FECHA_NAC_PERSONA"].ToString(),
-                                     _reader["CEDULA_PERSONA"].ToString(),
-                                     _reader["CORREO_PERSONA"].ToString(),
-                                     _reader["TELEFONO_PERSONA"].ToString(),
-                                     _reader["GENERO_PERSONA"].ToString(),
-                                     int.Parse(_reader["ID_DEPARTAMENTO"].ToString()),
-                                     new CUser(
-                                               int.Parse(_reader["ID_USUARIO"].ToString()),
-                                               _reader["NOMBRE_USUARIO"].ToString(),
-                                               _reader["CLAVE_USUARIO"].ToString(),
-                                               int.Parse(_reader["ID_TIPO_USUARIO"].ToString())));
+                while (_reader.Read())
+                    employee = new CEmployee(
+                                         int.Parse(_reader["ID_PERSONA"].ToString()),
+                                         _reader["NOMBRE_PERSONA"].ToString(),
+                                         _reader["FECHA_NAC_PERSONA"].ToString(),
+                                         _reader["CEDULA_PERSONA"].ToString(),
+                                         _reader["CORREO_PERSONA"].ToString(),
+                                         _reader["TELEFONO_PERSONA"].ToString(),
+                                         _reader["GENERO_PERSONA"].ToString(),
+                                         int.Parse(_reader["ID_DEPARTAMENTO"].ToString()),
+                                         new CUser(
+                                                   int.Parse(_reader["ID_USUARIO"].ToString()),
+                                                   _reader["NOMBRE_USUARIO"].ToString(),
+                                                   _reader["CLAVE_USUARIO"].ToString(),
+                                                   int.Parse(_reader["ID_TIPO_USUARIO"].ToString())));
 
-            return employee;
+                return employee;
+            });
+
+            task.Start();
+            return await task;
+            
         }
-        public override string Delete()
-        {
-            return "";
-        }
+        //public override string Delete()
+        //{
+        //    return "";
+        //}
 
         public new static CEmployee Select(string searchString)
         {

@@ -5,6 +5,7 @@ using Quejas_y_Reclamaciones.Interfaces;
 using System.ComponentModel.DataAnnotations;
 using System.Data;
 using System.Text.Json.Serialization;
+using System.Threading.Tasks;
 
 namespace Quejas_y_Reclamaciones.Models
 {
@@ -62,39 +63,49 @@ namespace Quejas_y_Reclamaciones.Models
 
             _connection = new SqlConnection("Data Source=DESKTOP-7V51383\\SQLEXPRESS;Initial Catalog=Quejas&Reclamaciones;Integrated Security=True");
         }
-        public virtual string Delete()
+        public async virtual Task<string> Delete()
         {
-            try
+            var task = new Task<string>(()=> 
             {
-                string message = "";
+                try
+                {
+                    string message = "";
 
-                if (_connection.State.Equals(ConnectionState.Closed))
-                    _connection.Open();
+                    if (_connection.State.Equals(ConnectionState.Closed))
+                        _connection.Open();
 
-                _command = new SqlCommand($@"EXEC ELIMINA_PERSONA_USUARIO {id}; 
+                    _command = new SqlCommand($@"EXEC ELIMINA_PERSONA_USUARIO {id}; 
                                              EXEC ERROR_MESSAGES;", _connection);
-                //_command.ExecuteNonQuery();
-                _reader = _command.ExecuteReader();
+                    //_command.ExecuteNonQuery();
+                    _reader = _command.ExecuteReader();
 
-                while (_reader.Read())
-                    message = _reader["Text"].ToString();
+                    while (_reader.Read())
+                        message = _reader["Text"].ToString();
 
-                return message;
-            }
-            catch (Exception ex)
-            {
-                throw new NotSupportedException(ex.Message);
-            }
+                    return message;
+                }
+                catch (Exception ex)
+                {
+                    throw new NotSupportedException(ex.Message);
+                }
+            });
+
+            task.Start();
+
+            return await task;
+            
         }
 
-        public virtual object Insert()
+        public async virtual Task<object> Insert()
         {
-            try
+            var task = new Task<object>(()=> 
             {
-                if (_connection.State.Equals(ConnectionState.Closed))
-                    _connection.Open();
+                try
+                {
+                    if (_connection.State.Equals(ConnectionState.Closed))
+                        _connection.Open();
 
-                _command = new SqlCommand($@"EXEC INSERTA_PERSONA
+                    _command = new SqlCommand($@"EXEC INSERTA_PERSONA
                                                     '{name.SQLInyectionClearString()}',
                                                     '{birthDay.SQLInyectionClearString()}',
                                                     '{idCard.SQLInyectionClearString()}',
@@ -107,42 +118,50 @@ namespace Quejas_y_Reclamaciones.Models
                                                 SELECT * FROM PERSONA P 
                                                         INNER JOIN USUARIO U ON U.ID_PERSONA = P.ID_PERSONA 
                                                         WHERE P.ID_PERSONA =(SELECT MAX(ID_PERSONA)FROM PERSONA);", _connection);
-                //_command.ExecuteNonQuery();
-                _reader = _command.ExecuteReader();
+                    //_command.ExecuteNonQuery();
+                    _reader = _command.ExecuteReader();
 
-                CPerson person=null;
+                    CPerson person = null;
 
-                while (_reader.Read())
-                    person=  new CPerson(int.Parse(_reader["ID_PERSONA"].ToString()),
-                                    _reader["NOMBRE_PERSONA"].ToString(),
-                                    _reader["FECHA_NAC_PERSONA"].ToString(),
-                                    _reader["CEDULA_PERSONA"].ToString(),
-                                    _reader["CORREO_PERSONA"].ToString(),
-                                    _reader["TELEFONO_PERSONA"].ToString(),
-                                    _reader["GENERO_PERSONA"].ToString(),
-                                    new CUser(int.Parse(_reader["ID_USUARIO"].ToString()),
-                                                _reader["NOMBRE_USUARIO"].ToString(),
-                                                _reader["CLAVE_USUARIO"].ToString(),
-                                                int.Parse(_reader["ID_TIPO_USUARIO"].ToString())));
-                return person;
-            }
-            catch (Exception ex)
-            {
-                throw new NotSupportedException(ex.Message);
-            }
+                    while (_reader.Read())
+                        person = new CPerson(int.Parse(_reader["ID_PERSONA"].ToString()),
+                                        _reader["NOMBRE_PERSONA"].ToString(),
+                                        _reader["FECHA_NAC_PERSONA"].ToString(),
+                                        _reader["CEDULA_PERSONA"].ToString(),
+                                        _reader["CORREO_PERSONA"].ToString(),
+                                        _reader["TELEFONO_PERSONA"].ToString(),
+                                        _reader["GENERO_PERSONA"].ToString(),
+                                        new CUser(int.Parse(_reader["ID_USUARIO"].ToString()),
+                                                    _reader["NOMBRE_USUARIO"].ToString(),
+                                                    _reader["CLAVE_USUARIO"].ToString(),
+                                                    int.Parse(_reader["ID_TIPO_USUARIO"].ToString())));
+                    return person;
+                }
+                catch (Exception ex)
+                {
+                    throw new NotSupportedException(ex.Message);
+                }
+            });
+
+            task.Start();
+
+            return await task;
+            
         }   
         
 
-        public virtual string Update()
+        public async virtual Task<string> Update()
         {
-            try
+            var task = new Task<string>(() => 
             {
-                string message = "";
+                try
+                {
+                    string message = "";
 
-                if (_connection.State.Equals(ConnectionState.Closed))
-                    _connection.Open();
+                    if (_connection.State.Equals(ConnectionState.Closed))
+                        _connection.Open();
 
-                _command = new SqlCommand($@"UPDATE PERSONA SET
+                    _command = new SqlCommand($@"UPDATE PERSONA SET
                                                     NOMBRE_PERSONA = '{name.SQLInyectionClearString()}',
                                                     FECHA_NAC_PERSONA = '{birthDay.SQLInyectionClearString()}',
                                                     CEDULA_PERSONA = '{idCard.SQLInyectionClearString()}',
@@ -152,56 +171,68 @@ namespace Quejas_y_Reclamaciones.Models
                                                     WHERE ID_PERSONA = {id}
                                                     
                                              EXEC ERROR_MESSAGES;", _connection);
-                //_command.ExecuteNonQuery();
-                _reader = _command.ExecuteReader();
+                    //_command.ExecuteNonQuery();
+                    _reader = _command.ExecuteReader();
 
-                while (_reader.Read())
-                    message = _reader["Text"].ToString();
+                    while (_reader.Read())
+                        message = _reader["Text"].ToString();
 
-                return message;
-            }
-            catch (Exception ex)
-            {
-                throw new NotSupportedException(ex.Message);
-            }
+                    return message;
+                }
+                catch (Exception ex)
+                {
+                    throw new NotSupportedException(ex.Message);
+                }
+            });
+
+            task.Start();
+            return await task;
+            
         }
 
-        public static List<CPerson> Select(string searchString)
+        public async static Task<List<CPerson>> Select(string searchString)
         {
-            try
-            {
-                _connection = new SqlConnection("Data Source=DESKTOP-7V51383\\SQLEXPRESS;Initial Catalog=Quejas&Reclamaciones;Integrated Security=True");
+            var task = new Task<List<CPerson>>(() =>
+             {
+                 try
+                 {
+                     _connection = new SqlConnection("Data Source=DESKTOP-7V51383\\SQLEXPRESS;Initial Catalog=Quejas&Reclamaciones;Integrated Security=True");
 
-                List<CPerson> people = new List<CPerson>();
+                     List<CPerson> people = new List<CPerson>();
 
-                if (_connection.State.Equals(ConnectionState.Closed))
-                    _connection.Open();
+                     if (_connection.State.Equals(ConnectionState.Closed))
+                         _connection.Open();
 
-                if (searchString == null)
-                    _command = new SqlCommand($"SELECT * FROM PERSONA", _connection);
-                else
-                    _command = new SqlCommand($"SELECT * FROM PERSONA {searchString}", _connection);
+                     if (searchString == null)
+                         _command = new SqlCommand($"SELECT * FROM PERSONA", _connection);
+                     else
+                         _command = new SqlCommand($"SELECT * FROM PERSONA {searchString}", _connection);
 
-                //_command.ExecuteNonQuery();
-                _reader = _command.ExecuteReader();
+                     //_command.ExecuteNonQuery();
+                     _reader = _command.ExecuteReader();
 
-                while (_reader.Read())
-                {
-                    people.Add(new CPerson(int.Parse(_reader["ID_PERSONA"].ToString()),
-                                            _reader["NOMBRE_PERSONA"].ToString(),
-                                            _reader["FECHA_NAC_PERSONA"].ToString(),
-                                            _reader["CEDULA_PERSONA"].ToString(),
-                                            _reader["CORREO_PERSONA"].ToString(),
-                                            _reader["TELEFONO_PERSONA"].ToString(),
-                                            _reader["GENERO_PERSONA"].ToString())         
-                                );
-                }
-                return people;
-            }
-            catch (Exception ex)
-            {
-                throw new NotSupportedException(ex.Message);
-            }
+                     while (_reader.Read())
+                     {
+                         people.Add(new CPerson(int.Parse(_reader["ID_PERSONA"].ToString()),
+                                                 _reader["NOMBRE_PERSONA"].ToString(),
+                                                 _reader["FECHA_NAC_PERSONA"].ToString(),
+                                                 _reader["CEDULA_PERSONA"].ToString(),
+                                                 _reader["CORREO_PERSONA"].ToString(),
+                                                 _reader["TELEFONO_PERSONA"].ToString(),
+                                                 _reader["GENERO_PERSONA"].ToString())
+                                     );
+                     }
+                     return people;
+                 }
+                 catch (Exception ex)
+                 {
+                     throw new NotSupportedException(ex.Message);
+                 }
+             });
+
+            task.Start();
+            return await task;
+            
         }
     }
 }

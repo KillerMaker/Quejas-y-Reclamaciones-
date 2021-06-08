@@ -18,7 +18,7 @@ namespace Quejas_y_Reclamaciones.Controllers
             if (complain.id.HasValue)
                 return BadRequest("Informacion Redundante (Id)");
             else
-                return Ok(complain.Insert());
+                return Ok(complain.Insert().Result);
         }
 
         [HttpPut("Actualizar")]
@@ -27,7 +27,7 @@ namespace Quejas_y_Reclamaciones.Controllers
             if (!complain.id.HasValue)
                 return BadRequest("Informacion Insuficiente de la queja (ID)");
             else
-                return Ok(complain.Update());
+                return Ok(complain.Update().Result);
         }
 
         [HttpDelete("Eliminar")]
@@ -36,16 +36,16 @@ namespace Quejas_y_Reclamaciones.Controllers
             if (!complain.id.HasValue)
                 return BadRequest("Informacion Insuficiente de la queja (ID)");
             else
-                return Ok(complain.Delete());
+                return Ok(complain.Delete().Result);
         }
 
         [HttpGet("Mostrar")]
         public IActionResult get(string searchString)
         {
-            if (CComplain.Select(searchString).Count.Equals(0))
+            if (CComplain.Select(searchString).Result.Count.Equals(0))
                 return NotFound("Recurso no encontrado");
             else
-                return Ok(CComplain.Select(searchString));
+                return Ok(CComplain.Select(searchString).Result);
         }
     }
 }

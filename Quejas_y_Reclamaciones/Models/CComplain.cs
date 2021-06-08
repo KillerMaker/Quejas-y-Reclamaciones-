@@ -35,15 +35,17 @@ namespace Quejas_y_Reclamaciones.Models
             _connection = new SqlConnection("Data Source = DESKTOP-7V51383\\SQLEXPRESS; Initial Catalog = Quejas&Reclamaciones; Integrated Security = True");
         }
 
-        public object Insert()
+        public async Task<object> Insert()
         {
-            string message = "";
-            try
+            var task = new Task<object>(()=> 
             {
-                if (_connection.State==ConnectionState.Closed)
-                    _connection.Open();
+                string message = "";
+                try
+                {
+                    if (_connection.State == ConnectionState.Closed)
+                        _connection.Open();
 
-                _command = new SqlCommand($@"EXEC INSERTA_QUEJA
+                    _command = new SqlCommand($@"EXEC INSERTA_QUEJA
                                                 {idPerson},
                                                 {idDepartment},
                                                '{date.SQLInyectionClearString()}',
@@ -52,104 +54,130 @@ namespace Quejas_y_Reclamaciones.Models
                                                 {idState};
                                             EXEC ERROR_MESSAGES;", _connection);
 
-                _reader = _command.ExecuteReader();
+                    _reader = _command.ExecuteReader();
 
-                while (_reader.Read())
-                    message = _reader["text"].ToString();
+                    while (_reader.Read())
+                        message = _reader["text"].ToString();
 
-                return message;
-            }
-            catch(Exception ex)
-            {
-                throw new NotSupportedException(ex.Message);
-            }
+                    return message;
+                }
+                catch (Exception ex)
+                {
+                    throw new NotSupportedException(ex.Message);
+                }
+            });
+
+            task.Start();
+            return await task;
+
         }
 
-        public string Update()
+        public async Task<string> Update()
         {
-            string message = "";
-            try
+            var task = new Task<string>(() => 
             {
-                if (_connection.State.Equals(ConnectionState.Closed))
-                    _connection.Open();
+                string message = "";
+                try
+                {
+                    if (_connection.State.Equals(ConnectionState.Closed))
+                        _connection.Open();
 
-                _command = new SqlCommand($@"UPDATE QUEJA SET
+                    _command = new SqlCommand($@"UPDATE QUEJA SET
                                                 DESCRIPCION_QUEJA = '{description.SQLInyectionClearString()}',
                                                 ID_TIPO_QUEJA = {idComplainType},
                                                 ID_ESTADO = {idState}
                                                 WHERE ID_QUEJA = {id};
                                             EXEC ERROR_MESSAGES;", _connection);
 
-                _reader = _command.ExecuteReader();
+                    _reader = _command.ExecuteReader();
 
-                while (_reader.Read())
-                    message = _reader["text"].ToString();
+                    while (_reader.Read())
+                        message = _reader["text"].ToString();
 
-                return message;
-            }
-            catch (Exception ex)
-            {
-                throw new NotSupportedException(ex.Message);
-            }
+                    return message;
+                }
+                catch (Exception ex)
+                {
+                    throw new NotSupportedException(ex.Message);
+                }
+            });
+
+            task.Start();
+
+            return await task;
+
         }
 
-        public string Delete()
+        public async Task<string> Delete()
         {
-            string message = "";
-            try
+            var task= new Task<string>(() =>
             {
-                if (_connection.State.Equals(ConnectionState.Closed))
-                    _connection.Open();
+                string message = "";
+                try
+                {
+                    if (_connection.State.Equals(ConnectionState.Closed))
+                        _connection.Open();
 
-                _command = new SqlCommand($@"DELETE FROM QUEJA WHERE ID_QUEJA ={id}
+                    _command = new SqlCommand($@"DELETE FROM QUEJA WHERE ID_QUEJA ={id}
                                             EXEC ERROR_MESSAGES;", _connection);
 
-                _reader = _command.ExecuteReader();
+                    _reader = _command.ExecuteReader();
 
-                while (_reader.Read())
-                    message = _reader["text"].ToString();
+                    while (_reader.Read())
+                        message = _reader["text"].ToString();
 
-                return message;
-            }
-            catch (Exception ex)
-            {
-                throw new NotSupportedException(ex.Message);
-            }
+                    return message;
+                }
+                catch (Exception ex)
+                {
+                    throw new NotSupportedException(ex.Message);
+                }
+            });
+
+            task.Start();
+            return await task;
+            
         }
 
-        public static List<CComplain> Select(string searchString)
+        public async static Task<List<CComplain>> Select(string searchString)
         {
-            try
+            var task = new Task<List<CComplain>>(() => 
             {
-                List<CComplain> complains = new List<CComplain>();
-                _connection = new SqlConnection("Data Source = DESKTOP-7V51383\\SQLEXPRESS; Initial Catalog = Quejas&Reclamaciones; Integrated Security = True");
-                
-                if (_connection.State.Equals(ConnectionState.Closed))
-                    _connection.Open();
+                try
+                {
+                    List<CComplain> complains = new List<CComplain>();
+                    _connection = new SqlConnection("Data Source = DESKTOP-7V51383\\SQLEXPRESS; Initial Catalog = Quejas&Reclamaciones; Integrated Security = True");
 
-                if (searchString == null)
-                    _command = new SqlCommand("SELECT * FROM VISTA_QUEJA", _connection);
-                else
-                    _command = new SqlCommand($"SELECT * FROM VISTA_QUEJA {searchString}", _connection);
+                    if (_connection.State.Equals(ConnectionState.Closed))
+                        _connection.Open();
 
-                _reader = _command.ExecuteReader();
+                    if (searchString == null)
+                        _command = new SqlCommand("SELECT * FROM VISTA_QUEJA", _connection);
+                    else
+                        _command = new SqlCommand($"SELECT * FROM VISTA_QUEJA {searchString}", _connection);
 
-                while (_reader.Read())
-                    complains.Add(new CComplain(
-                                  int.Parse(_reader["ID_QUEJA"].ToString()),
-                                  int.Parse(_reader["ID_PERSONA"].ToString()),
-                                  int.Parse(_reader["ID_DEPARTAMENTO"].ToString()),
-                                  _reader["FECHA_QUEJA"].ToString(),
-                                  _reader["DESCRIPCION_QUEJA"].ToString(),
-                                  int.Parse(_reader["ID_TIPO_QUEJA"].ToString()),
-                                  int.Parse(_reader["ID_ESTADO"].ToString())));
-               return complains;
+                    _reader = _command.ExecuteReader();
 
-            }
-            catch(Exception ex)
-            {
-                throw new NotSupportedException(ex.Message);
-            }
+                    while (_reader.Read())
+                        complains.Add(new CComplain(
+                                      int.Parse(_reader["ID_QUEJA"].ToString()),
+                                      int.Parse(_reader["ID_PERSONA"].ToString()),
+                                      int.Parse(_reader["ID_DEPARTAMENTO"].ToString()),
+                                      _reader["FECHA_QUEJA"].ToString(),
+                                      _reader["DESCRIPCION_QUEJA"].ToString(),
+                                      int.Parse(_reader["ID_TIPO_QUEJA"].ToString()),
+                                      int.Parse(_reader["ID_ESTADO"].ToString())));
+                    return complains;
+
+                }
+                catch (Exception ex)
+                {
+                    throw new NotSupportedException(ex.Message);
+                }
+            });
+
+            task.Start();
+            return await task;
             
         }
     }

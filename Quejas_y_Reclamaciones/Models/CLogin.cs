@@ -25,95 +25,118 @@ namespace Quejas_y_Reclamaciones.Models
             _connection = new SqlConnection("Data Source = DESKTOP-7V51383\\SQLEXPRESS; Initial Catalog = Quejas&Reclamaciones; Integrated Security = True");
 
         }
-        public CPerson loginIntoApplication()
+        public async Task<CPerson> loginIntoApplication()
         {
-            try
+            var task = new Task<CPerson>(()=> 
             {
-                _connection.Close();
-                _connection.Open();
+                try
+                {
+                    _connection.Close();
+                    _connection.Open();
 
-                _command = new SqlCommand($@"SELECT * FROM PERSONA P INNER JOIN USUARIO U ON U.ID_PERSONA=P.ID_PERSONA
-                                                WHERE U.NOMBRE_USUARIO='{userName.SQLInyectionClearString()}' AND U.CLAVE_USUARIO='{password.SQLInyectionClearString()}'",_connection);
-                _reader = _command.ExecuteReader();
+                    _command = new SqlCommand($@"SELECT * FROM PERSONA P INNER JOIN USUARIO U ON U.ID_PERSONA=P.ID_PERSONA
+                                                WHERE U.NOMBRE_USUARIO='{userName.SQLInyectionClearString()}' AND U.CLAVE_USUARIO='{password.SQLInyectionClearString()}'", _connection);
+                    _reader = _command.ExecuteReader();
 
-                CPerson person=null;
-                while (_reader.Read())
-                    person= new CPerson(int.Parse(_reader["ID_PERSONA"].ToString()),
-                                        _reader["NOMBRE_PERSONA"].ToString(),
-                                        _reader["FECHA_NAC_PERSONA"].ToString(),
-                                        _reader["CEDULA_PERSONA"].ToString(),
-                                        _reader["CORREO_PERSONA"].ToString(),
-                                        _reader["TELEFONO_PERSONA"].ToString(),
-                                        _reader["GENERO_PERSONA"].ToString(),
-                                        new CUser(
-                                                    int.Parse(_reader["ID_USUARIO"].ToString()),
-                                                    _reader["NOMBRE_USUARIO"].ToString(),
-                                                    _reader["CLAVE_USUARIO"].ToString(),
-                                                    int.Parse(_reader["ID_TIPO_USUARIO"].ToString())));
+                    CPerson person = null;
+                    while (_reader.Read())
+                        person = new CPerson(int.Parse(_reader["ID_PERSONA"].ToString()),
+                                            _reader["NOMBRE_PERSONA"].ToString(),
+                                            _reader["FECHA_NAC_PERSONA"].ToString(),
+                                            _reader["CEDULA_PERSONA"].ToString(),
+                                            _reader["CORREO_PERSONA"].ToString(),
+                                            _reader["TELEFONO_PERSONA"].ToString(),
+                                            _reader["GENERO_PERSONA"].ToString(),
+                                            new CUser(
+                                                        int.Parse(_reader["ID_USUARIO"].ToString()),
+                                                        _reader["NOMBRE_USUARIO"].ToString(),
+                                                        _reader["CLAVE_USUARIO"].ToString(),
+                                                        int.Parse(_reader["ID_TIPO_USUARIO"].ToString())));
 
-                return person;
-            }   
-            catch(Exception ex)
-            {
-                throw new NotSupportedException(ex.Message);
-            }
+                    return person;
+                }
+                catch (Exception ex)
+                {
+                    throw new NotSupportedException(ex.Message);
+                }
+            });
+
+            task.Start();
+            return await task;
         }
 
-        public bool CheckUserName()
+        public async Task<bool>CheckUserName()
         {
-            int state = 0;
-            try
-            {
-                _connection.Close();
-                _connection.Open();
+           
+               var task= new Task<bool>(()=> 
+               {
+                   
+                   try
+                   {
+                       int state = 0;
+                       _connection.Close();
+                       _connection.Open();
 
-                _command = new SqlCommand($@"IF EXISTS (SELECT TOP 1 * FROM USUARIO WHERE NOMBRE_USUARIO ='{userName.SQLInyectionClearString()}')
+                        _command = new SqlCommand($@"IF EXISTS (SELECT TOP 1 * FROM USUARIO WHERE NOMBRE_USUARIO ='{userName.SQLInyectionClearString()}')
                                                 SELECT 1 AS EXISTENCIA_USUARIO
                                              ELSE
                                                 SELECT 0 AS EXISTENCIA_USUARIO", _connection);
-                 _reader = _command.ExecuteReader();
-                while (_reader.Read())
-                    state = int.Parse(_reader["EXISTENCIA_USUARIO"].ToString());
 
-                if (state == 0)
-                    return false;
-                else
-                    return true;
+                        _reader = _command.ExecuteReader();
+                        while (_reader.Read())
+                            state = int.Parse(_reader["EXISTENCIA_USUARIO"].ToString());
 
+                        if (state == 0)
+                            return false;
+                        else
+                            return true;
+                    }
 
-            }
-            catch (Exception ex)
-            {
-                throw new NotSupportedException(ex.Message);
-            }
+                    catch (Exception ex)
+                    {
+                        throw new NotSupportedException(ex.Message);
+                    }
+               });
+
+            task.Start();
+            return await task; 
+           
         }
-        public bool CheckPassword()
+        public async Task<bool> CheckPassword()
         {
-            try
+            var task = new Task<bool>(()=> 
             {
-                int state = 0;
-                _connection.Close();
-                _connection.Open();
+                try
+                {
+                    int state = 0;
+                    _connection.Close();
+                    _connection.Open();
 
-                _command = new SqlCommand($@"IF EXISTS (SELECT TOP 1 * FROM USUARIO WHERE NOMBRE_USUARIO='{userName.SQLInyectionClearString()}' AND CLAVE_USUARIO ='{password.SQLInyectionClearString()}')
-                                                    SELECT 1 AS USUARIO_VALIDO
-                                                 ELSE
-                                                    SELECT 0 AS USUARIO_VALIDO", _connection);
-                _reader = _command.ExecuteReader();
-                while (_reader.Read())
-                    state = int.Parse(_reader["USUARIO_VALIDO"].ToString());
+                    _command = new SqlCommand($@"IF EXISTS (SELECT TOP 1 * FROM USUARIO WHERE NOMBRE_USUARIO='{userName.SQLInyectionClearString()}' AND CLAVE_USUARIO ='{password.SQLInyectionClearString()}')
+                                                        SELECT 1 AS USUARIO_VALIDO
+                                                        ELSE
+                                                        SELECT 0 AS USUARIO_VALIDO", _connection);
+                    _reader = _command.ExecuteReader();
+                    while (_reader.Read())
+                        state = int.Parse(_reader["USUARIO_VALIDO"].ToString());
 
-                if (state == 0)
-                    return false;
+                    if (state == 0)
+                        return false;
 
-                else
-                    return true;
-            }
-            catch (Exception ex)
-            {
-                throw new NotSupportedException(ex.Message);
-            }
-            
+                    else
+                        return true;
+                }
+                catch(Exception ex)
+                {
+                    throw new NotSupportedException(ex.Message);
+                }
+            });
+
+            task.Start();
+            return await task;
         }
+            
+            
     }
 }
+

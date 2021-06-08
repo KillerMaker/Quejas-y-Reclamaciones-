@@ -18,7 +18,15 @@ namespace Quejas_y_Reclamaciones.Controllers
             if (employee.id.HasValue)
                 return BadRequest("Informacion redundante (ID)");
             else
-                return Ok(employee.Insert());
+                return Ok(employee.Insert().Result);
+        }
+        [HttpPut("Actualizar")]
+        public IActionResult Put(CEmployee employee)
+        {
+            if (!employee.id.HasValue)
+                return BadRequest("Informacion Insuficiente (ID)");
+            else
+                return Ok(employee.Update().Result);
         }
 
     }

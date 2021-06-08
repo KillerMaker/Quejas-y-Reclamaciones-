@@ -18,7 +18,7 @@ namespace Quejas_y_Reclamaciones.Controllers
             if (person.user == null)
                 return BadRequest("Informacion de usuario Insuficiente");
             else
-                return Ok(person.Insert());
+                return Ok(person.Insert().Result);
         } 
 
         [HttpDelete("Eliminar")]
@@ -27,7 +27,7 @@ namespace Quejas_y_Reclamaciones.Controllers
             if (!person.id.HasValue)
                 return BadRequest("Informacion de busqueda Insuficiente Falta Id");
             else
-                return Ok(person.Delete());
+                return Ok(person.Delete().Result);
 
         }
 
@@ -37,16 +37,16 @@ namespace Quejas_y_Reclamaciones.Controllers
             if (!person.id.HasValue)
                 return BadRequest("Informacion de busqueda Insuficiente Falta Id");
             else
-                return Ok(person.Update());
+                return Ok(person.Update().Result);
         }
 
         [HttpGet("Mostrar/{searchString?}")]
         public IActionResult get(string searchString)
         {
-            if (CPerson.Select(searchString).Count.Equals(0))
+            if (CPerson.Select(searchString).Result.Count.Equals(0))
                 return NotFound("Recurso no encontrado");
             else
-                return Ok(CPerson.Select(searchString));
+                return Ok(CPerson.Select(searchString).Result);
         }
 
     }
