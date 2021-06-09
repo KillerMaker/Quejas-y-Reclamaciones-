@@ -17,6 +17,7 @@ namespace Quejas_y_Reclamaciones.Models
         public string description { get; set; }
         public int idComplainType { get; set; }
         public int idState { get; set; }
+        public string stateTittle { get; set; }
 
         private static SqlConnection _connection;
         private static SqlCommand _command;
@@ -141,6 +142,7 @@ namespace Quejas_y_Reclamaciones.Models
 
         public async static Task<List<CComplain>> Select(string searchString)
         {
+            
             var task = new Task<List<CComplain>>(() => 
             {
                 try
@@ -159,14 +161,20 @@ namespace Quejas_y_Reclamaciones.Models
                     _reader = _command.ExecuteReader();
 
                     while (_reader.Read())
-                        complains.Add(new CComplain(
+                    {
+                       CComplain complain= new CComplain(
                                       int.Parse(_reader["ID_QUEJA"].ToString()),
                                       int.Parse(_reader["ID_PERSONA"].ToString()),
                                       int.Parse(_reader["ID_DEPARTAMENTO"].ToString()),
                                       _reader["FECHA_QUEJA"].ToString(),
                                       _reader["DESCRIPCION_QUEJA"].ToString(),
                                       int.Parse(_reader["ID_TIPO_QUEJA"].ToString()),
-                                      int.Parse(_reader["ID_ESTADO"].ToString())));
+                                      int.Parse(_reader["ID_ESTADO"].ToString()))
+                                      { stateTittle=_reader["TITULO_ESTADO"].ToString()};
+
+                        complains.Add(complain);
+                    }
+                        
                     return complains;
 
                 }

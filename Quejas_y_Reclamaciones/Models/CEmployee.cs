@@ -18,7 +18,7 @@ namespace Quejas_y_Reclamaciones.Models
         public async override Task<string> Update()
         {
 
-           await base.Update();
+            await base.Update();
 
             var task = new Task<string>(()=>
             {
@@ -51,7 +51,8 @@ namespace Quejas_y_Reclamaciones.Models
             return await task;
             
         }
-        public async override  Task<object> Insert()
+
+        public async override Task<object> Insert()
         {
             var task = new Task<object>(()=> 
             {

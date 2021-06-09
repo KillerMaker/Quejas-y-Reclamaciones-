@@ -35,7 +35,6 @@ namespace Quejas_y_Reclamaciones.Models
         [StringLength(1)]
         public string genre { get; set; }
 
-
         //public CPerson(int id, string name, string birthDay, string idCard, string email, string phone, string genre)
         //{
         //    this.id = id;
