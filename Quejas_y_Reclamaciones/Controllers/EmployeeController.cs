@@ -20,6 +20,7 @@ namespace Quejas_y_Reclamaciones.Controllers
             else
                 return Ok(employee.Insert().Result);
         }
+
         [HttpPut("Actualizar")]
         public IActionResult Put(CEmployee employee)
         {
@@ -27,6 +28,24 @@ namespace Quejas_y_Reclamaciones.Controllers
                 return BadRequest("Informacion Insuficiente (ID)");
             else
                 return Ok(employee.Update().Result);
+        }
+
+        [HttpGet("Mostrar/{searchString?}")]
+        public IActionResult Get(string searchString)
+        {
+            if (CEmployee.Select(searchString).Result.Count.Equals(0))
+                return BadRequest("Recurso no Encontrado");
+            else
+                return Ok(CEmployee.Select(searchString).Result);
+        }
+
+        [HttpDelete("Eliminar")]
+        public IActionResult Delete(CEmployee employee)
+        {
+            if (employee.id.HasValue)
+                return BadRequest("Informacion Insuficiente (ID)");
+            else
+                return Ok(employee.Delete().Result);
         }
 
     }

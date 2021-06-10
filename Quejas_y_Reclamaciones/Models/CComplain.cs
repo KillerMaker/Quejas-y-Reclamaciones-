@@ -10,6 +10,7 @@ namespace Quejas_y_Reclamaciones.Models
 {
     public class CComplain:IEntityInterface<CComplain>
     {
+        //Atributos de Constructor
         public int? id { get; set; }
         public int idPerson { get; set; }
         public int idDepartment { get; set; }
@@ -17,8 +18,15 @@ namespace Quejas_y_Reclamaciones.Models
         public string description { get; set; }
         public int idComplainType { get; set; }
         public int idState { get; set; }
-        public string stateTittle { get; set; }
 
+
+        //Atributos opcionales
+        public string stateTittle { get; set; }
+        public string departmentName { get; set; }
+        public string complainTypeName { get; set; }
+
+
+        // Miembros de la clase
         private static SqlConnection _connection;
         private static SqlCommand _command;
         private static SqlDataReader _reader;
@@ -170,7 +178,11 @@ namespace Quejas_y_Reclamaciones.Models
                                       _reader["DESCRIPCION_QUEJA"].ToString(),
                                       int.Parse(_reader["ID_TIPO_QUEJA"].ToString()),
                                       int.Parse(_reader["ID_ESTADO"].ToString()))
-                                      { stateTittle=_reader["TITULO_ESTADO"].ToString()};
+                                      { 
+                                           stateTittle=_reader["TITULO_ESTADO"].ToString(),
+                                           departmentName=_reader["NOMBRE_DEPARTAMENTO"].ToString(),
+                                           complainTypeName=_reader["TITULO_QUEJA"].ToString()
+                                      };
 
                         complains.Add(complain);
                     }
