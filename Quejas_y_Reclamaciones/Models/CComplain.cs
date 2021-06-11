@@ -8,7 +8,7 @@ using Quejas_y_Reclamaciones.Interfaces;
 
 namespace Quejas_y_Reclamaciones.Models
 {
-    public class CComplain:IEntityInterface<CComplain>
+    public class CComplain : IEntityInterface<CComplain>
     {
         //Atributos de Constructor
         public int? id { get; set; }
@@ -24,6 +24,7 @@ namespace Quejas_y_Reclamaciones.Models
         public string stateTittle { get; set; }
         public string departmentName { get; set; }
         public string complainTypeName { get; set; }
+        public string PersonName { get; set; }
 
 
         // Miembros de la clase
@@ -127,7 +128,7 @@ namespace Quejas_y_Reclamaciones.Models
                     if (_connection.State.Equals(ConnectionState.Closed))
                         _connection.Open();
 
-                    _command = new SqlCommand($@"DELETE FROM QUEJA WHERE ID_QUEJA ={id}
+                    _command = new SqlCommand($@"EXEC ELIMINA_QUEJA {id.Value}
                                             EXEC ERROR_MESSAGES;", _connection);
 
                     _reader = _command.ExecuteReader();
@@ -181,8 +182,9 @@ namespace Quejas_y_Reclamaciones.Models
                                       { 
                                            stateTittle=_reader["TITULO_ESTADO"].ToString(),
                                            departmentName=_reader["NOMBRE_DEPARTAMENTO"].ToString(),
-                                           complainTypeName=_reader["TITULO_QUEJA"].ToString()
-                                      };
+                                           complainTypeName=_reader["TITULO_QUEJA"].ToString(),
+                                           PersonName = _reader["NOMBRE_PERSONA"].ToString()
+                       };
 
                         complains.Add(complain);
                     }

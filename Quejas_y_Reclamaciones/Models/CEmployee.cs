@@ -34,8 +34,8 @@ namespace Quejas_y_Reclamaciones.Models
                 string message = "";
                 try
                 {
-                    _connection.Close();
-                    _connection.Open();
+                    if (_connection.State.Equals(ConnectionState.Closed))
+                        _connection.Open();
 
                     _command = new SqlCommand($@"UPDATE PERSONA_DEPARTAMENTO SET 
                                             ID_DEPARTAMENTO={idDepartment}
@@ -65,8 +65,8 @@ namespace Quejas_y_Reclamaciones.Models
         {
             var task = new Task<object>(()=> 
             {
-                _connection.Close();
-                _connection.Open();
+                if (_connection.State.Equals(ConnectionState.Closed))
+                    _connection.Open();
 
                 _command = new SqlCommand($@"EXEC INSERTA_EMPLEADO
                                               '{name}',
@@ -116,8 +116,8 @@ namespace Quejas_y_Reclamaciones.Models
             {
                 try
                 {
-                    _connection.Close();
-                    _connection.Open();
+                    if (_connection.State.Equals(ConnectionState.Closed))
+                        _connection.Open();
 
                     string mensaje = "";
                     _command = new SqlCommand($@"UPDATE PERSONA_DEPARTAMENTO SET
@@ -151,8 +151,8 @@ namespace Quejas_y_Reclamaciones.Models
                 {
                     _connection = new SqlConnection("Data Source=DESKTOP-7V51383\\SQLEXPRESS;Initial Catalog=Quejas&Reclamaciones;Integrated Security=True");
 
-                    _connection.Close();
-                    _connection.Open();
+                    if (_connection.State.Equals(ConnectionState.Closed))
+                        _connection.Open();
 
                     List<CEmployee> employees = new List<CEmployee>();
                     CEmployee employee;
@@ -187,7 +187,6 @@ namespace Quejas_y_Reclamaciones.Models
                         employees.Add(employee);
 
                     }
-
                     return employees;
 
                 }
