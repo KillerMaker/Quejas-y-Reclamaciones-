@@ -37,7 +37,7 @@ namespace Quejas_y_Reclamaciones.Models
                     if (_connection.State.Equals(ConnectionState.Closed))
                         _connection.Open();
 
-                    _command = new SqlCommand($@"UPDATE PERSONA_DEPARTAMENTO SET 
+                    _command = new SqlCommand($@"UPDATE EMPLEADO SET 
                                             ID_DEPARTAMENTO={idDepartment}
                                             WHERE ID_PERSONA ={id}
                                             EXEC ERROR_MESSAGES", _connection);

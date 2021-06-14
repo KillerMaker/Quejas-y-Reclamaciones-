@@ -47,5 +47,11 @@ namespace Quejas_y_Reclamaciones.Controllers
             else
                 return Ok(CComplain.Select(searchString).Result);
         }
+        [HttpGet("Mostrar/{id}")]
+        public IActionResult get(int id)
+        {
+            string searchString = $"WHERE ID_QUEJA= {id}";
+          return  Ok(CComplain.Select(searchString).Result);
+        }
     }
 }

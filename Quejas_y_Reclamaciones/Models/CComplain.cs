@@ -97,7 +97,7 @@ namespace Quejas_y_Reclamaciones.Models
                                                 ID_TIPO_QUEJA = {idComplainType},
                                                 ID_ESTADO = {idState}
                                                 WHERE ID_QUEJA = {id};
-                                            EXEC ERROR_MESSAGES;", _connection);
+                                                EXEC ERROR_MESSAGES;", _connection);
 
                     _reader = _command.ExecuteReader();
 
