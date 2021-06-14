@@ -42,6 +42,7 @@ namespace Quejas_y_Reclamaciones.Models
             this.idComplainType = idComplainType;
             this.idState = idState;
 
+            //_connection = new SqlConnection("Data Source=DESKTOP-T76LFOU;Initial Catalog=Quejas&Reclamaciones;Integrated Security=True");
             _connection = new SqlConnection("Data Source = DESKTOP-7V51383\\SQLEXPRESS; Initial Catalog = Quejas&Reclamaciones; Integrated Security = True");
         }
 
@@ -118,17 +119,19 @@ namespace Quejas_y_Reclamaciones.Models
 
         }
 
-        public async Task<string> Delete()
+        public static async Task<string> Delete(int id)
         {
             var task= new Task<string>(() =>
             {
                 string message = "";
                 try
                 {
-                    if (_connection.State.Equals(ConnectionState.Closed))
-                        _connection.Open();
+                    //_connection = new SqlConnection("Data Source=DESKTOP-T76LFOU;Initial Catalog=Quejas&Reclamaciones;Integrated Security=True");
+                    _connection = new SqlConnection("Data Source = DESKTOP-7V51383\\SQLEXPRESS; Initial Catalog = Quejas&Reclamaciones; Integrated Security = True");
 
-                    _command = new SqlCommand($@"EXEC ELIMINA_QUEJA {id.Value}
+                    _connection.Open();
+
+                    _command = new SqlCommand($@"EXEC ELIMINA_QUEJA {id}
                                             EXEC ERROR_MESSAGES;", _connection);
 
                     _reader = _command.ExecuteReader();
@@ -157,6 +160,7 @@ namespace Quejas_y_Reclamaciones.Models
                 try
                 {
                     List<CComplain> complains = new List<CComplain>();
+                    //_connection = new SqlConnection("Data Source=DESKTOP-T76LFOU;Initial Catalog=Quejas&Reclamaciones;Integrated Security=True");
                     _connection = new SqlConnection("Data Source = DESKTOP-7V51383\\SQLEXPRESS; Initial Catalog = Quejas&Reclamaciones; Integrated Security = True");
 
                     if (_connection.State.Equals(ConnectionState.Closed))

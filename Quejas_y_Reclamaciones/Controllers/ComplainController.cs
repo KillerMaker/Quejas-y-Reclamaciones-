@@ -30,13 +30,13 @@ namespace Quejas_y_Reclamaciones.Controllers
                 return Ok(complain.Update().Result);
         }
 
-        [HttpDelete("Eliminar")]
-        public IActionResult delete(CComplain complain)
+        [HttpDelete("Eliminar/{id:int}")]
+        public IActionResult delete(int? id)
         {
-            if (!complain.id.HasValue)
+            if (!id.HasValue)
                 return BadRequest("Informacion Insuficiente de la queja (ID)");
             else
-                return Ok(complain.Delete().Result);
+                return Ok(CComplain.Delete(id.Value).Result);
         }
 
         [HttpGet("Mostrar")]

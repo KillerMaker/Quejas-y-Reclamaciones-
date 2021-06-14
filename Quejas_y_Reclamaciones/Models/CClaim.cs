@@ -117,7 +117,7 @@ namespace Quejas_y_Reclamaciones.Models
             return await task;
         }
 
-        public async Task<string> Delete()
+        public static async Task<string> Delete(int id)
         {
             var task = new Task<string>(() =>
             {
@@ -128,7 +128,7 @@ namespace Quejas_y_Reclamaciones.Models
 
                     string message = "";
 
-                    _command = new SqlCommand($@"EXEC ELIMINA_RECLAMACION {id.Value}
+                    _command = new SqlCommand($@"EXEC ELIMINA_RECLAMACION {id}
                                                 
                                                 EXEC ERROR_MESSAGES;", _connection);
 
