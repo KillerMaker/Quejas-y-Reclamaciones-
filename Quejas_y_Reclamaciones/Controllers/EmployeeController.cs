@@ -13,39 +13,50 @@ namespace Quejas_y_Reclamaciones.Controllers
     public class EmployeeController : ControllerBase
     {
         [HttpPost("Insertar")]
-        public IActionResult Post(CEmployee employee)
+        public async Task<IActionResult> Post(CEmployee employee)
         {
             if (employee.id.HasValue)
                 return BadRequest("Informacion redundante (ID)");
             else
-                return Ok(employee.Insert().Result);
+                return Ok(await employee.Insert());
         }
 
         [HttpPut("Actualizar")]
-        public IActionResult Put(CEmployee employee)
+        public async Task<IActionResult> Put(CEmployee employee)
         {
             if (!employee.id.HasValue)
                 return BadRequest("Informacion Insuficiente (ID)");
             else
-                return Ok(employee.Update().Result);
+                return Ok(await employee.Update());
         }
 
         [HttpGet("Mostrar/{searchString?}")]
-        public IActionResult Get(string searchString)
+        public async Task<IActionResult> Get(string searchString)
         {
             if (CEmployee.Select(searchString).Result.Count.Equals(0))
                 return BadRequest("Recurso no Encontrado");
             else
-                return Ok(CEmployee.Select(searchString).Result);
+                return Ok(await CEmployee.Select(searchString));
         }
 
-        [HttpDelete("Eliminar")]
-        public IActionResult Delete(CEmployee employee)
+        [HttpGet("Mostrar/{id:int}")]
+        public async Task<IActionResult> Get(int id)
         {
-            if (employee.id.HasValue)
+            string searchString = $"WHERE ID_PERSONA ={id}";
+
+            if (CEmployee.Select(searchString).Result.Count.Equals(0))
+                return BadRequest("Recurso no Encontrado");
+            else
+                return Ok(await CEmployee.Select(searchString));
+        }
+
+        [HttpDelete("Eliminar/{id:int}")]
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (!id.HasValue)
                 return BadRequest("Informacion Insuficiente (ID)");
             else
-                return Ok(employee.Delete().Result);
+                return Ok(await CEmployee.Delete(id.Value));
         }
 
     }

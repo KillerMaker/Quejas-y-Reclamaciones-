@@ -2,13 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Quejas_y_Reclamaciones.Interfaces;
 using System.Data.SqlClient;
 using System.Data;
 
 namespace Quejas_y_Reclamaciones.Models
 {
-    public class CClaim:IEntityInterface<CClaim>
+    public class CClaim:CEntity<int>
     {
         //Atributos de Constructor
         public int? id { get; set; }
@@ -25,11 +24,6 @@ namespace Quejas_y_Reclamaciones.Models
         public string departmentName { get; private set; }
         public string PersonName { get; set; }
 
-        //Miembros de la clase
-        private static SqlConnection _connection;
-        private static SqlCommand _command;
-        private static SqlDataReader _reader;
-
         public CClaim(int? id,int idPerson,int idDepartment,string date,string description,int claimType,int idState)
         {
             this.id = id;
@@ -40,19 +34,19 @@ namespace Quejas_y_Reclamaciones.Models
             this.claimType = claimType;
             this.idState = idState;
 
-            _connection = new SqlConnection("Data Source=DESKTOP-7V51383\\SQLEXPRESS;Initial Catalog=Quejas&Reclamaciones;Integrated Security=True");
+            setConnection();
         }
 
-        public async Task<object> Insert()
+        public override async Task<int> Insert()
         {
-            var task = new Task<object>(() => 
+            var task = new Task<int>(() => 
             {
                 try
                 {
                     if (_connection.State.Equals(ConnectionState.Closed))
                         _connection.Open();
 
-                    string message = "";
+                    int insertedID=0;
 
                     _command = new SqlCommand($@"EXEC INSERTA_RECLAMACION 
                                                     {idPerson},
@@ -62,14 +56,14 @@ namespace Quejas_y_Reclamaciones.Models
                                                     {claimType},
                                                     {idState};
                                                 
-                                                EXEC ERROR_MESSAGES;", _connection);
+                                                SELECT MAX(ID_RECLAMACION) FROM RECLAMACION;", _connection);
 
                     _reader = _command.ExecuteReader();
 
                     while (_reader.Read())
-                        message = _reader["Text"].ToString();
+                        insertedID = int.Parse(_reader["ID_RECLAMACION"].ToString());
 
-                    return message;
+                    return insertedID;
                 }
                 catch(Exception ex)
                 {
@@ -81,16 +75,16 @@ namespace Quejas_y_Reclamaciones.Models
             return await task;
         }
 
-        public async Task<string> Update()
+        public override async Task<int> Update()
         {
-            var task = new Task<string>(() =>
+            var task = new Task<int>(() =>
             {
                 try
                 {
                     if (_connection.State.Equals(ConnectionState.Closed))
                         _connection.Open();
 
-                    string message = "";
+                    int rowCount = 0;
 
                     _command = new SqlCommand($@"UPDATE RECLAMACION SET
                                                    ID_DEPARTAMENTO = {idDepartment},
@@ -98,14 +92,19 @@ namespace Quejas_y_Reclamaciones.Models
                                                    ID_TIPO_RECLAMACION = {claimType},
                                                    ID_ESTADO = {idState}
                                                 WHERE ID_RECLAMACION ={id};
-                                                EXEC ERROR_MESSAGES;", _connection);
+
+                                               SELECT @@ROWCOUNT AS [COLUMN];", _connection);
 
                     _reader = _command.ExecuteReader();
 
                     while (_reader.Read())
-                        message = _reader["Text"].ToString();
+                        rowCount =int.Parse( _reader["COLUMN"].ToString());
 
-                    return message;
+                    if (rowCount != 0)
+                        return id.Value;
+                    else
+                        return rowCount;
+
                 }
                 catch (Exception ex)
                 {
@@ -117,27 +116,31 @@ namespace Quejas_y_Reclamaciones.Models
             return await task;
         }
 
-        public static async Task<string> Delete(int id)
+        public static async Task<int> Delete(int id)
         {
-            var task = new Task<string>(() =>
+            var task = new Task<int>(() =>
             {
                 try
                 {
+                    setConnection();
                     if (_connection.State.Equals(ConnectionState.Closed))
                         _connection.Open();
 
-                    string message = "";
+                    int rowCount = 0;
 
-                    _command = new SqlCommand($@"EXEC ELIMINA_RECLAMACION {id}
+                    _command = new SqlCommand($@"EXEC ELIMINA_RECLAMACION {id};
                                                 
-                                                EXEC ERROR_MESSAGES;", _connection);
+                                                SELECT @@ROWCOUNT AS [COLUMN];", _connection);
 
                     _reader = _command.ExecuteReader();
 
                     while (_reader.Read())
-                        message = _reader["Text"].ToString();
+                        rowCount =int.Parse(_reader["COLUMN"].ToString());
 
-                    return message;
+                    if(rowCount!=0)
+                        return id;
+                    else
+                        return rowCount;
                 }
                 catch (Exception ex)
                 {
@@ -154,6 +157,7 @@ namespace Quejas_y_Reclamaciones.Models
             {
                 try
                 {
+                    setConnection();
                     List<CClaim> claims = new List<CClaim>();
                     _connection = new SqlConnection("Data Source = DESKTOP-7V51383\\SQLEXPRESS; Initial Catalog = Quejas&Reclamaciones; Integrated Security = True");
 

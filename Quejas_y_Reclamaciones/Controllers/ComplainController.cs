@@ -13,45 +13,45 @@ namespace Quejas_y_Reclamaciones.Controllers
     public class ComplainController : ControllerBase
     {
         [HttpPost("Insertar")]
-        public IActionResult post(CComplain complain)
+        public async Task<IActionResult> post(CComplain complain)
         {
             if (complain.id.HasValue)
                 return BadRequest("Informacion Redundante (Id)");
             else
-                return Ok(complain.Insert().Result);
+                return Ok(await complain.Insert());
         }
 
         [HttpPut("Actualizar")]
-        public IActionResult put(CComplain complain)
+        public async Task<IActionResult> put(CComplain complain)
         {
             if (!complain.id.HasValue)
                 return BadRequest("Informacion Insuficiente de la queja (ID)");
             else
-                return Ok(complain.Update().Result);
+                return Ok(await complain.Update());
         }
 
         [HttpDelete("Eliminar/{id:int}")]
-        public IActionResult delete(int? id)
+        public async Task<IActionResult> delete(int? id)
         {
             if (!id.HasValue)
                 return BadRequest("Informacion Insuficiente de la queja (ID)");
             else
-                return Ok(CComplain.Delete(id.Value).Result);
+                return Ok(await CComplain.Delete(id.Value));
         }
 
         [HttpGet("Mostrar")]
-        public IActionResult get(string searchString)
+        public async Task<IActionResult> get(string searchString)
         {
             if (CComplain.Select(searchString).Result.Count.Equals(0))
                 return NotFound("Recurso no encontrado");
             else
-                return Ok(CComplain.Select(searchString).Result);
+                return Ok(await CComplain.Select(searchString));
         }
-        [HttpGet("Mostrar/{id}")]
-        public IActionResult get(int id)
+        [HttpGet("Mostrar/{id?}")]
+        public async Task<IActionResult> get(int id)
         {
-            string searchString = $"WHERE ID_QUEJA= {id}";
-          return  Ok(CComplain.Select(searchString).Result);
+          string searchString = $"WHERE ID_QUEJA= {id}";
+          return  Ok(await CComplain.Select(searchString));
         }
     }
 }

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
-using Quejas_y_Reclamaciones.Interfaces;
 using System.ComponentModel.DataAnnotations;
 using System.Data;
 using System.Threading.Tasks;
@@ -9,13 +8,9 @@ using System.Threading.Tasks;
 
 namespace Quejas_y_Reclamaciones.Models
 {
-    public class CProduct:IEntityInterface<CProduct>
+    public class CProduct:CEntity<int>
     {
         
-        private static SqlConnection _connection;
-        private static SqlCommand _command;
-        private static SqlDataReader _reader;
-
         public int? id { get; set; }
 
         [StringLength(50)]
@@ -35,29 +30,34 @@ namespace Quejas_y_Reclamaciones.Models
             this.state = state;
             this.productType = productType;
 
-            _connection = new SqlConnection("Data Source=DESKTOP-7V51383\\SQLEXPRESS;Initial Catalog=Quejas&Reclamaciones;Integrated Security=True");
+            setConnection();
         }
 
-        public async Task<string> Delete()
+        public static async Task<int> Delete(int id)
         {
-            var task = new Task<string>(()=> 
+            var task = new Task<int>(()=> 
             {
                 try
                 {
-                    string message = "";
+                    int rowCount = 0;
 
+                    setConnection();
                     if (_connection.State.Equals(ConnectionState.Closed))
                         _connection.Open();
 
                     _command = new SqlCommand($@"DELETE FROM PRODUCTO WHERE ID_PRODUCTO={id}; 
-                                             EXEC ERROR_MESSAGES;", _connection);
-                    //_command.ExecuteNonQuery();
+                                             SELECT @@ROWCOUNT AS [COLUMN]", _connection);
+
                     _reader = _command.ExecuteReader();
 
                     while (_reader.Read())
-                        message = _reader["Text"].ToString();
+                        rowCount =int.Parse(_reader["COLUMN"].ToString());
 
-                    return message;
+                    if (rowCount != 0)
+                        return id;
+                    else
+                        return rowCount;
+
                 }
                 catch (Exception ex)
                 {
@@ -69,13 +69,13 @@ namespace Quejas_y_Reclamaciones.Models
 
         }
 
-        public async Task<object> Insert()
+        public override async Task<int> Insert()
         {
-            var task = new Task<object>(()=> 
+            var task = new Task<int>(()=> 
             {
                 try
                 {
-                    string message = "";
+                    int rowCount = 0;
 
                     if (_connection.State.Equals(ConnectionState.Closed))
                         _connection.Open();
@@ -85,14 +85,17 @@ namespace Quejas_y_Reclamaciones.Models
                                               '{price}',
                                               '{state}',
                                               '{productType}';
-                                         EXEC ERROR_MESSAGES;", _connection);
+                                         SELECT @@ROWCOUNT AS [COLUMN];", _connection);
                     //_command.ExecuteNonQuery();
                     _reader = _command.ExecuteReader();
 
                     while (_reader.Read())
-                        message = _reader["Text"].ToString();
+                        rowCount =int.Parse(_reader["COLUMN"].ToString());
 
-                    return message;
+                    if (rowCount != 0)
+                        return id.Value;
+                    else
+                        return rowCount;
                 }
                 catch (Exception ex)
                 {
@@ -118,10 +121,11 @@ namespace Quejas_y_Reclamaciones.Models
             {
                 try
                 {
-                    _connection = new SqlConnection("Data Source=DESKTOP-7V51383\\SQLEXPRESS;Initial Catalog=Quejas&Reclamaciones;Integrated Security=True");
-
+                    setConnection();
+                    
                     int idProduct = 0;
                     int? nullableIdProduct = null;
+
                     List<CProduct> products = new List<CProduct>();
 
                     if (_connection.State.Equals(ConnectionState.Closed))
@@ -162,13 +166,13 @@ namespace Quejas_y_Reclamaciones.Models
             return await task;
 
         }
-        public async Task<string> Update()
+        public override async Task<int> Update()
         {
-            var task = new Task<string>(()=>
+            var task = new Task<int>(()=>
             {
                 try
                 {
-                    string message = "";
+                    int rowCount = 0;
 
                     if (_connection.State.Equals(ConnectionState.Closed))
                         _connection.Open();
@@ -179,14 +183,19 @@ namespace Quejas_y_Reclamaciones.Models
                                                 ID_ESTADO = {state},
                                                 ID_TIPO_PRODUCTO = {productType}
                                                 WHERE ID_PRODUCTO = {id};
-                                       EXEC ERROR_MESSAGES;", _connection);
+
+                                       SELECT @@ROWCOUNT AS [COLUMN];", _connection);
                     //_command.ExecuteNonQuery();
                     _reader = _command.ExecuteReader();
 
                     while (_reader.Read())
-                        message = _reader["Text"].ToString();
+                        rowCount =int.Parse(_reader["COLUMN"].ToString());
 
-                    return message;
+                    if (rowCount != 0)
+                        return id.Value;
+                    else
+                        return rowCount;
+
                 }
                 catch (Exception ex)
                 {

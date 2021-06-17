@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
-using Quejas_y_Reclamaciones.Interfaces;
 using System.ComponentModel.DataAnnotations;
 using System.Data;
 using System.Text.Json.Serialization;
@@ -9,12 +8,8 @@ using System.Threading.Tasks;
 
 namespace Quejas_y_Reclamaciones.Models
 {
-    public class CPerson : IEntityInterface<CPerson>
+    public class CPerson:CEntity<CPerson>
     {
-        protected static SqlConnection _connection;
-        protected static SqlCommand _command;
-        protected static SqlDataReader _reader;
-
         public CUser user { get; set; }
         public int? id { get; set; }
 
@@ -60,28 +55,32 @@ namespace Quejas_y_Reclamaciones.Models
             this.genre = genre;
             this.user = user;
 
-            _connection = new SqlConnection("Data Source=DESKTOP-7V51383\\SQLEXPRESS;Initial Catalog=Quejas&Reclamaciones;Integrated Security=True");
+            setConnection();
         }
-        public async virtual Task<string> Delete()
+        public static async Task<int> Delete(int id)
         {
-            var task = new Task<string>(()=> 
+            var task = new Task<int>(()=> 
             {
                 try
                 {
-                    string message = "";
+                    int rowCount = 0;
 
+                    setConnection();
                     if (_connection.State.Equals(ConnectionState.Closed))
                         _connection.Open();
 
                     _command = new SqlCommand($@"EXEC ELIMINA_PERSONA_USUARIO {id}; 
-                                             EXEC ERROR_MESSAGES;", _connection);
+                                                SELECT @@ROWCOUNT AS [COLUMN];", _connection);
                     //_command.ExecuteNonQuery();
                     _reader = _command.ExecuteReader();
 
                     while (_reader.Read())
-                        message = _reader["Text"].ToString();
+                       rowCount =int.Parse(_reader["COLUMN"].ToString());
 
-                    return message;
+                    if (rowCount != 0)
+                        return id;
+                    else
+                        return rowCount;
                 }
                 catch (Exception ex)
                 {
@@ -95,9 +94,9 @@ namespace Quejas_y_Reclamaciones.Models
             
         }
 
-        public async virtual Task<object> Insert()
+        public async override Task<CPerson> Insert()
         {
-            var task = new Task<object>(()=> 
+            var task = new Task<CPerson>(()=> 
             {
                 try
                 {
@@ -149,13 +148,13 @@ namespace Quejas_y_Reclamaciones.Models
         }   
         
 
-        public async virtual Task<string> Update()
+        public override async Task<int> Update()
         {
-            var task = new Task<string>(() => 
+            var task = new Task<int>(() => 
             {
                 try
                 {
-                    string message = "";
+                    int rowCount = 0;
 
                     if (_connection.State.Equals(ConnectionState.Closed))
                         _connection.Open();
@@ -169,14 +168,17 @@ namespace Quejas_y_Reclamaciones.Models
                                                     GENERO_PERSONA = '{genre.SQLInyectionClearString()}'
                                                     WHERE ID_PERSONA = {id}
                                                     
-                                             EXEC ERROR_MESSAGES;", _connection);
+                                                SELECT @@ROWCOUNT AS [COLUMN];", _connection);
                     //_command.ExecuteNonQuery();
                     _reader = _command.ExecuteReader();
 
                     while (_reader.Read())
-                        message = _reader["Text"].ToString();
+                        rowCount = int.Parse(_reader["COLUMN"].ToString());
 
-                    return message;
+                    if (rowCount != 0)
+                        return id.Value;
+                    else
+                        return rowCount;
                 }
                 catch (Exception ex)
                 {
@@ -195,8 +197,7 @@ namespace Quejas_y_Reclamaciones.Models
              {
                  try
                  {
-                     _connection = new SqlConnection("Data Source=DESKTOP-7V51383\\SQLEXPRESS;Initial Catalog=Quejas&Reclamaciones;Integrated Security=True");
-
+                     setConnection();
                      List<CPerson> people = new List<CPerson>();
 
                      if (_connection.State.Equals(ConnectionState.Closed))

@@ -13,39 +13,49 @@ namespace Quejas_y_Reclamaciones.Controllers
     public class ClaimController : ControllerBase
     {
         [HttpPost("Insertar")]
-        public IActionResult Post(CClaim claim)
+        public async Task<IActionResult> Post(CClaim claim)
         {
             if (claim.id.HasValue)
                 return BadRequest("Informacion redundante (ID)");
             else
-                return Ok(claim.Insert().Result);
+                return Ok(await claim.Insert());
         }
         
         [HttpGet("Mostrar")]
-        public IActionResult Get(string searchString)
+        public async Task<IActionResult> Get(string searchString)
         {
             if (CClaim.Select(searchString).Result.Count.Equals(0))
                 return NotFound("Recurso no encontrado");
             else
-                return Ok(CClaim.Select(searchString).Result);
+                return Ok(await CClaim.Select(searchString));
+        }
+        [HttpGet("Mostrar/{id:int}")]
+        public async Task<IActionResult> Get(int id)
+        {
+            string searchString = $"WHERE ID_PERSONA={id}";
+
+            if (CClaim.Select(searchString).Result.Count.Equals(0))
+                return NotFound("Recurso no encontrado");
+            else
+                return Ok(await CClaim.Select(searchString));
         }
 
         [HttpPut("Actualizar")]
-        public IActionResult Put(CClaim claim)
+        public async Task<IActionResult> Put(CClaim claim)
         {
             if (!claim.id.HasValue)
                 return BadRequest("Informacion Insuficiente (ID)");
             else
-                return Ok(claim.Update().Result);
+                return Ok(await claim.Update());
         }
 
-        [HttpDelete("Eliminar")]
-        public IActionResult Delete(CClaim claim)
+        [HttpDelete("Eliminar/{id}")]
+        public async Task<IActionResult> Delete(int? id)
         {
-            if (!claim.id.HasValue)
+            if (!id.HasValue)
                 return BadRequest("Informacion Insuficiente (ID)");
             else
-                return Ok(claim.Delete().Result);
+                return Ok(await CClaim.Delete(id.Value));
         }
     }
 }

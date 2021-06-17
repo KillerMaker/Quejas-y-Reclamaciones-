@@ -2,13 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Quejas_y_Reclamaciones.Interfaces;
 using System.Data;
 using System.Data.SqlClient;
 
 namespace Quejas_y_Reclamaciones.Models
 {
-    public class CEmployee :CPerson,IEntityInterface<CEmployee>
+    public class CEmployee :CPerson
     {
         //Atributos de Constructor
         public int idDepartment { get; set; }
@@ -24,14 +23,14 @@ namespace Quejas_y_Reclamaciones.Models
                 =>this.idDepartment=idDepartment;
 
 
-        public async override Task<string> Update()
+        public async override Task<int> Update()
         {
 
             await base.Update();
 
-            var task = new Task<string>(()=>
+            var task = new Task<int>(()=>
             {
-                string message = "";
+                int rowCount = 0;
                 try
                 {
                     if (_connection.State.Equals(ConnectionState.Closed))
@@ -39,15 +38,19 @@ namespace Quejas_y_Reclamaciones.Models
 
                     _command = new SqlCommand($@"UPDATE EMPLEADO SET 
                                             ID_DEPARTAMENTO={idDepartment}
-                                            WHERE ID_PERSONA ={id}
-                                            EXEC ERROR_MESSAGES", _connection);
+                                            WHERE ID_PERSONA ={id};
+
+                                            SELECT @@ROWCOUNT AS [COLUMN]", _connection);
 
                     _reader = _command.ExecuteReader();
 
                     while (_reader.Read())
-                        message = _reader["Text"].ToString();
+                        rowCount =int.Parse(_reader["COLUMN"].ToString());
 
-                    return message;
+                    if (rowCount != 0)
+                        return id.Value;
+                    else
+                        return rowCount;
                 }
                 catch (Exception ex)
                 {
@@ -61,9 +64,9 @@ namespace Quejas_y_Reclamaciones.Models
             
         }
 
-        public async override Task<object> Insert()
+        public async override Task<CPerson> Insert()
         {
-            var task = new Task<object>(()=> 
+            var task = new Task<CPerson>(()=> 
             {
                 if (_connection.State.Equals(ConnectionState.Closed))
                     _connection.Open();
@@ -108,30 +111,23 @@ namespace Quejas_y_Reclamaciones.Models
             return await task;
             
         }
-        public async override Task<string> Delete()
+        public new static async Task<int> Delete(int id)
         {
-            await base.Delete();
-
-            var task = new Task<string>(()=> 
+            var task = new Task<Task<int>>(async()=> 
             {
                 try
                 {
+                    setConnection();
                     if (_connection.State.Equals(ConnectionState.Closed))
                         _connection.Open();
 
-                    string mensaje = "";
-                    _command = new SqlCommand($@"UPDATE PERSONA_DEPARTAMENTO SET
-                                                    ID_DEPARTAMENTO={idDepartment},
-                                                    ID_ESTADO={idState}
-                                                WHERE ID_PERSONA={id};
-                                                
-                                                EXEC ERROR_MESSAGES;", _connection);
+                    _command = new SqlCommand($@"EXEC ELIMINA_EMPLEADO {id}", _connection);
 
-                    _reader = _command.ExecuteReader();
-                    while (_reader.Read())
-                        mensaje= _reader["Text"].ToString();
+                    await _command.ExecuteReaderAsync();
+                    await CPerson.Delete(id);
+                    _connection.Close();
 
-                    return mensaje;
+                    return await CPerson.Delete(id);
                 }
                 catch (Exception ex)
                 {
@@ -140,7 +136,7 @@ namespace Quejas_y_Reclamaciones.Models
             });
 
             task.Start();
-            return await task;
+            return await task.Result;
         }
 
         public async new static Task<List<CEmployee>> Select(string searchString)
