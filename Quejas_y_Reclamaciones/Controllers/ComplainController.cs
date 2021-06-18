@@ -50,7 +50,7 @@ namespace Quejas_y_Reclamaciones.Controllers
         [HttpGet("Mostrar/{id?}")]
         public async Task<IActionResult> get(int id)
         {
-          string searchString = $"WHERE ID_QUEJA= {id}";
+          string searchString = $"WHERE ID_PERSONA= {id}";
           return  Ok(await CComplain.Select(searchString));
         }
     }

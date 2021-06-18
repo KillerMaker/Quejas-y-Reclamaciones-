@@ -69,7 +69,6 @@ namespace Quejas_y_Reclamaciones.Models
             {
                 try
                 {
-
                     int rowCount = 0;
 
                     if (_connection.State.Equals(ConnectionState.Closed))

@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Data.SqlClient;
 using System.Data;
-using System.Threading.Tasks;
 
 namespace Quejas_y_Reclamaciones.Models
 {
@@ -23,6 +22,5 @@ namespace Quejas_y_Reclamaciones.Models
             _connection = new SqlConnection("Data Source=DESKTOP-7V51383\\SQLEXPRESS;Initial Catalog=Quejas&Reclamaciones;Integrated Security=True");
 
         }
-
     }
 }

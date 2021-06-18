@@ -22,9 +22,6 @@ namespace Quejas_y_Reclamaciones.Controllers
                 return BadRequest("Recurso no encontrado");
             else
                 return Ok(list);
-            
-
-
         }
 
     }
