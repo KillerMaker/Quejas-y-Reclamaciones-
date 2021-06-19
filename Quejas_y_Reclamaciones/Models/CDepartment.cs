@@ -66,14 +66,11 @@ namespace Quejas_y_Reclamaciones.Models
                 try 
                 {
                     setConnection();
-                    _connection.Close();
 
                     List<CDepartment> departments = new List<CDepartment>();
                     CDepartment department = null;
 
-                    if (_connection.State.Equals(ConnectionState.Closed))
-                        _connection.Open();
-
+                    _connection.Open();
                     _command = new SqlCommand($"SELECT * FROM DEPARTAMENTO",_connection);
 
                     _reader = _command.ExecuteReader();
@@ -87,7 +84,8 @@ namespace Quejas_y_Reclamaciones.Models
 
                         departments.Add(department);
                     }
-
+                    
+                    _connection.Close();
                     return departments;
 
                 }
@@ -96,9 +94,9 @@ namespace Quejas_y_Reclamaciones.Models
                     throw new NotSupportedException(ex.Message);
                 }
             });
+
             task.Start();
-            var task2 = await task;
-            return task2;
+            return await task;
         }
     }
 }

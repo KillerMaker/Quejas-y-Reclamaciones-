@@ -132,6 +132,7 @@ namespace Quejas_y_Reclamaciones.Models
                             );
                         ComplainTypes.Add(ComplainType);
                     }
+                    _connection.Close();
                     return ComplainTypes;
                 }
                 catch (Exception ex)

@@ -161,7 +161,6 @@ namespace Quejas_y_Reclamaciones.Models
                 {
                     List<CComplain> complains = new List<CComplain>();
                     setConnection();
-                    _connection.Close();
 
                     if (_connection.State.Equals(ConnectionState.Closed))
                         _connection.Open();
@@ -189,7 +188,8 @@ namespace Quejas_y_Reclamaciones.Models
                                            complainTypeName=_reader["TITULO_QUEJA"].ToString(),
                                            PersonName = _reader["NOMBRE_PERSONA"].ToString()
                        };
-
+                        
+                        _connection.Close();
                         complains.Add(complain);
                     }
                         
