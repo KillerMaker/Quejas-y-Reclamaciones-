@@ -9,9 +9,9 @@ namespace Quejas_y_Reclamaciones.Models
 {
     public class CDepartment:CEntity<int>
     {
-        int? id { get; set; }
-        string departmentName { get; set; }
-        int managerId { get; set; }
+        public int? id { get; set; }
+        public string departmentName { get; set; }
+        public int managerId { get; set; }
 
         public CDepartment(int? id,string departmentName,int managerId )
         {
@@ -66,27 +66,23 @@ namespace Quejas_y_Reclamaciones.Models
                 try 
                 {
                     setConnection();
-                    List<CDepartment> departments = null;
-
+                    List<CDepartment> departments = new List<CDepartment>();
+                    CDepartment department = null;
 
                     if (_connection.State.Equals(ConnectionState.Closed))
                         _connection.Open();
 
-                    if (searchString != null)
-                        _command = new SqlCommand($"SELECT * FROM DEPARTAMENTO {searchString}");
-                    else
-                        _command = new SqlCommand($"SELECT * FROM DEPARTAMENTO");
+                    _command = new SqlCommand($"SELECT * FROM DEPARTAMENTO",_connection);
 
                     _reader = _command.ExecuteReader();
 
                     while(_reader.Read())
                     {
-                        CDepartment department = new CDepartment
-                        (
+                        department = new CDepartment(
                             int.Parse(_reader["ID_DEPARTAMENTO"].ToString()),
                             _reader["NOMBRE_DEPARTAMENTO"].ToString(),
-                            int.Parse(_reader["ID_ENCARGADO"].ToString())
-                        );
+                            int.Parse(_reader["ID_ENCARGADO"].ToString()));
+
                         departments.Add(department);
                     }
 
@@ -98,8 +94,9 @@ namespace Quejas_y_Reclamaciones.Models
                     throw new NotSupportedException(ex.Message);
                 }
             });
-
-            return await task;
+            task.Start();
+            var task2 = await task;
+            return task2;
         }
     }
 }

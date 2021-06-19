@@ -13,16 +13,9 @@ namespace Quejas_y_Reclamaciones.Controllers
     public class DepartmentsController : ControllerBase
     {
         [HttpGet("Mostrar")]
-        public async Task<IActionResult>get(int? id)
+        public async Task<IActionResult>get()
         {
-            List<CDepartment> departments = new List<CDepartment>();
-
-            departments = await CDepartment.Select("");
-
-            if (departments.Count.Equals(0))
-                return BadRequest("MMG");
-            else
-                return Ok(departments);
+            return Ok(await CDepartment.Select(null));
         }
     }
 }
