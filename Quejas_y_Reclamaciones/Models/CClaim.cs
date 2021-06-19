@@ -170,7 +170,6 @@ namespace Quejas_y_Reclamaciones.Models
 
                     _connection.Close();
                     List<CClaim> claims = new List<CClaim>();
-                    _connection = new SqlConnection("Data Source = DESKTOP-7V51383\\SQLEXPRESS; Initial Catalog = Quejas&Reclamaciones; Integrated Security = True");
 
                     if (_connection.State.Equals(ConnectionState.Closed))
                         _connection.Open();

@@ -24,6 +24,7 @@ namespace Quejas_y_Reclamaciones.Controllers
         [HttpGet("Mostrar")]
         public async Task<IActionResult> Get(string searchString)
         {
+            searchString += "AND ID_ESTADO!=3";
             if (CClaim.Select(searchString).Result.Count.Equals(0))
                 return NotFound("Recurso no encontrado");
             else
@@ -32,7 +33,7 @@ namespace Quejas_y_Reclamaciones.Controllers
         [HttpGet("Mostrar/{id:int}")]
         public async Task<IActionResult> Get(int id)
         {
-            string searchString = $"WHERE ID_PERSONA={id}";
+            string searchString = $"WHERE ID_PERSONA={id} AND ID_ESTADO!=3";
 
             if (CClaim.Select(searchString).Result.Count.Equals(0))
                 return NotFound("Recurso no encontrado");
