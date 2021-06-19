@@ -141,7 +141,7 @@ namespace Quejas_y_Reclamaciones.Models
                     _reader = _command.ExecuteReader();
 
                     while (_reader.Read())
-                        rowCount =int.Parse( _reader["text"].ToString());
+                        rowCount =int.Parse( _reader["COLUMN"].ToString());
 
                     if (rowCount != 0)
                         return id;
