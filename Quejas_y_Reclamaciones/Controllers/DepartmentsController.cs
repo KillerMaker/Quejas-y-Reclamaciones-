@@ -12,7 +12,7 @@ namespace Quejas_y_Reclamaciones.Controllers
     [ApiController]
     public class DepartmentsController : ControllerBase
     {
-        [HttpGet("Mostrar/{id?:int}")]
+        [HttpGet("Mostrar")]
         public async Task<IActionResult>get(int? id)
         {
             List<CDepartment> departments = new List<CDepartment>();
