@@ -66,6 +66,8 @@ namespace Quejas_y_Reclamaciones.Models
                 try 
                 {
                     setConnection();
+                    _connection.Close();
+
                     List<CDepartment> departments = new List<CDepartment>();
                     CDepartment department = null;
 

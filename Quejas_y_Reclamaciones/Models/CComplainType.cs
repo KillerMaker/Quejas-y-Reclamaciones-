@@ -77,8 +77,8 @@ namespace Quejas_y_Reclamaciones.Models
                     _command = new SqlCommand($@"UPDATE TIPO_QUEJA SET 
                                                     DESCRIPCION_QUEJA={description},
                                                     TITULO_QUEJA ={tittle},
-                                                    ID_ESTADO = {stateId};
-
+                                                    ID_ESTADO = {stateId}
+                                                    WHERE ID_QUEJA={id};
                                        SELECT @@ROWCOUNT AS [COLUMN];", _connection);
                     //_command.ExecuteNonQuery();
                     _reader = _command.ExecuteReader();

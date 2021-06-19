@@ -118,6 +118,7 @@ namespace Quejas_y_Reclamaciones.Models
                 try
                 {
                     setConnection();
+                    _connection.Close();
                     if (_connection.State.Equals(ConnectionState.Closed))
                         _connection.Open();
 
