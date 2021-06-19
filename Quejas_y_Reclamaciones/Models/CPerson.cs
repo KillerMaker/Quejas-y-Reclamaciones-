@@ -10,6 +10,9 @@ namespace Quejas_y_Reclamaciones.Models
 {
     public class CPerson:CEntity<CPerson>
     {
+        protected static SqlConnection _connection;
+        protected static SqlCommand _command;
+        protected static SqlDataReader _reader;
         public CUser user { get; set; }
         public int? id { get; set; }
 

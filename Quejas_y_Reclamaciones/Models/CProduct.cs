@@ -10,7 +10,10 @@ namespace Quejas_y_Reclamaciones.Models
 {
     public class CProduct:CEntity<int>
     {
-        
+        protected static SqlConnection _connection;
+        protected static SqlCommand _command;
+        protected static SqlDataReader _reader;
+
         public int? id { get; set; }
 
         [StringLength(50)]

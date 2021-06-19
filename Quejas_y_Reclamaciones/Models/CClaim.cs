@@ -9,6 +9,10 @@ namespace Quejas_y_Reclamaciones.Models
 {
     public class CClaim:CEntity<int>
     {
+        protected static SqlConnection _connection;
+        protected static SqlCommand _command;
+        protected static SqlDataReader _reader;
+
         //Atributos de Constructor
         public int? id { get; set; }
         public int idPerson { get; set; }
@@ -35,6 +39,7 @@ namespace Quejas_y_Reclamaciones.Models
             this.idState = idState;
 
             setConnection();
+            _connection = connection;
         }
 
         public override async Task<int> Insert()
@@ -123,6 +128,8 @@ namespace Quejas_y_Reclamaciones.Models
                 try
                 {
                     setConnection();
+                    _connection = connection;
+
                     _connection.Close();
                     if (_connection.State.Equals(ConnectionState.Closed))
                         _connection.Open();
@@ -159,6 +166,8 @@ namespace Quejas_y_Reclamaciones.Models
                 try
                 {
                     setConnection();
+                    _connection = connection;
+
                     _connection.Close();
                     List<CClaim> claims = new List<CClaim>();
                     _connection = new SqlConnection("Data Source = DESKTOP-7V51383\\SQLEXPRESS; Initial Catalog = Quejas&Reclamaciones; Integrated Security = True");

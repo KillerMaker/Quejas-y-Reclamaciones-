@@ -9,6 +9,10 @@ namespace Quejas_y_Reclamaciones.Models
 {
     public class CComplain:CEntity<int>
     {
+        protected static SqlConnection _connection;
+        protected static SqlCommand _command;
+        protected static SqlDataReader _reader;
+
         //Atributos de Constructor
         public int? id { get; set; }
         public int idPerson { get; set; }
@@ -37,6 +41,7 @@ namespace Quejas_y_Reclamaciones.Models
             this.idState = idState;
 
             setConnection();
+            _connection = connection;
         }
 
         public override async Task<int> Insert()
@@ -56,12 +61,12 @@ namespace Quejas_y_Reclamaciones.Models
                                                '{description.SQLInyectionClearString()}',
                                                 {idComplainType},
                                                 {idState};
-                                            SELECT MAX(ID_QUEJA) FROM QUEJA;", _connection);
+                                            SELECT MAX(ID_QUEJA) AS [COLUMN] FROM QUEJA;", _connection);
 
                     _reader = _command.ExecuteReader();
 
                     while (_reader.Read())
-                        insertedId = int.Parse(_reader["text"].ToString());
+                        insertedId = int.Parse(_reader["COLUMN"].ToString());
 
                     return insertedId;
                 }
@@ -124,6 +129,8 @@ namespace Quejas_y_Reclamaciones.Models
                 try
                 {
                     setConnection();
+                    _connection = connection;
+
                     _connection.Close();
                     if(_connection.State.Equals(ConnectionState.Closed))
                         _connection.Open();
@@ -160,7 +167,9 @@ namespace Quejas_y_Reclamaciones.Models
                 try
                 {
                     List<CComplain> complains = new List<CComplain>();
+
                     setConnection();
+                    _connection = connection;
 
                     if (_connection.State.Equals(ConnectionState.Closed))
                         _connection.Open();

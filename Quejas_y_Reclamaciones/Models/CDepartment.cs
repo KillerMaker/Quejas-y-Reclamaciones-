@@ -9,6 +9,10 @@ namespace Quejas_y_Reclamaciones.Models
 {
     public class CDepartment:CEntity<int>
     {
+        protected static SqlConnection _connection;
+        protected static SqlCommand _command;
+        protected static SqlDataReader _reader;
+
         public int? id { get; set; }
         public string departmentName { get; set; }
         public int managerId { get; set; }
@@ -94,7 +98,6 @@ namespace Quejas_y_Reclamaciones.Models
                     throw new NotSupportedException(ex.Message);
                 }
             });
-
             task.Start();
             return await task;
         }

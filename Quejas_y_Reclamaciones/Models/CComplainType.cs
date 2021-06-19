@@ -9,6 +9,9 @@ namespace Quejas_y_Reclamaciones.Models
 {
     public class CComplainType : CEntity<int>
     {
+        protected static SqlConnection _connection;
+        protected static SqlCommand _command;
+        protected static SqlDataReader _reader;
         public int? id { get; set; }
         public string tittle { get; set;}
         public string description { get; set;}
