@@ -25,6 +25,7 @@ namespace Quejas_y_Reclamaciones.Models
             this.stateId = stateId;
 
             setConnection();
+            _connection = connection;
         }
 
         public async override Task<int> Insert()
@@ -111,6 +112,8 @@ namespace Quejas_y_Reclamaciones.Models
                 try
                 {
                     setConnection();
+                    _connection = connection;
+
                     List<CComplainType> ComplainTypes = new List<CComplainType>();
                     CComplainType ComplainType;
 

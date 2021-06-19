@@ -45,6 +45,8 @@ namespace Quejas_y_Reclamaciones.Models
                     int rowCount = 0;
 
                     setConnection();
+                    _connection = connection;
+
                     if (_connection.State.Equals(ConnectionState.Closed))
                         _connection.Open();
 
@@ -125,7 +127,8 @@ namespace Quejas_y_Reclamaciones.Models
                 try
                 {
                     setConnection();
-                    
+                    _connection = connection;
+
                     int idProduct = 0;
                     int? nullableIdProduct = null;
 
