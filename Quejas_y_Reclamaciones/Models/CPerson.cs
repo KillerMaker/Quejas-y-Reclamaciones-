@@ -63,183 +63,115 @@ namespace Quejas_y_Reclamaciones.Models
         }
         public static async Task<int> Delete(int id)
         {
-            var task = new Task<int>(()=> 
+            try
             {
-                try
-                {
-                    int rowCount = 0;
+                setConnection();
+                _connection = connection;
 
-                    setConnection();
-                    _connection = connection;
+                if (_connection.State.Equals(ConnectionState.Open))
+                   await _connection.CloseAsync();
 
-                    if (_connection.State.Equals(ConnectionState.Closed))
-                        _connection.Open();
+                await _connection.OpenAsync();
 
-                    _command = new SqlCommand($@"EXEC ELIMINA_PERSONA_USUARIO {id}; 
-                                                SELECT @@ROWCOUNT AS [COLUMN];", _connection);
-                    //_command.ExecuteNonQuery();
-                    _reader = _command.ExecuteReader();
+                _command = new SqlCommand($@"EXEC ELIMINA_PERSONA_USUARIO {id};", _connection);
 
-                    while (_reader.Read())
-                       rowCount =int.Parse(_reader["COLUMN"].ToString());
+                return (await _command.ExecuteNonQueryAsync() != 0) ? id : 0;
 
-                    if (rowCount != 0)
-                        return id;
-                    else
-                        return rowCount;
-                }
-                catch (Exception ex)
-                {
-                    throw new NotSupportedException(ex.Message);
-                }
-            });
-
-            task.Start();
-
-            return await task;
+            }
+            catch (Exception ex)
+            {
+                throw new NotSupportedException(ex.Message);
+            }
             
         }
 
         public async override Task<CPerson> Insert()
         {
-            var task = new Task<CPerson>(()=> 
+            try
             {
-                try
-                {
-                    if (_connection.State.Equals(ConnectionState.Closed))
-                        _connection.Open();
+                if (_connection.State.Equals(ConnectionState.Closed))
+                   await _connection.OpenAsync();
 
-                    _command = new SqlCommand($@"EXEC INSERTA_PERSONA
-                                                    '{name.SQLInyectionClearString()}',
-                                                    '{birthDay.SQLInyectionClearString()}',
-                                                    '{idCard.SQLInyectionClearString()}',
-                                                    '{email.SQLInyectionClearString()}',
-                                                    '{phone.SQLInyectionClearString()}',
-                                                    '{genre.SQLInyectionClearString()}',
-                                                    '{user.userName.SQLInyectionClearString()}',
-                                                    '{user.password.SQLInyectionClearString()}',
-                                                        {user.userType};
-                                                SELECT * FROM PERSONA P 
-                                                        INNER JOIN USUARIO U ON U.ID_PERSONA = P.ID_PERSONA 
-                                                        WHERE P.ID_PERSONA =(SELECT MAX(ID_PERSONA)FROM PERSONA);", _connection);
-                    //_command.ExecuteNonQuery();
-                    _reader = _command.ExecuteReader();
+                _command = new SqlCommand($@"EXEC INSERTA_PERSONA
+                                                '{name.SQLInyectionClearString()}',
+                                                '{birthDay.SQLInyectionClearString()}',
+                                                '{idCard.SQLInyectionClearString()}',
+                                                '{email.SQLInyectionClearString()}',
+                                                '{phone.SQLInyectionClearString()}',
+                                                '{genre.SQLInyectionClearString()}',
+                                                '{user.userName.SQLInyectionClearString()}',
+                                                '{user.password.SQLInyectionClearString()}',
+                                                    {user.userType};", _connection);
 
-                    CPerson person = null;
+                return (await _command.ExecuteNonQueryAsync() != 0) ? this : null;
 
-                    while (_reader.Read())
-                        person = new CPerson(int.Parse(_reader["ID_PERSONA"].ToString()),
-                                        _reader["NOMBRE_PERSONA"].ToString(),
-                                        _reader["FECHA_NAC_PERSONA"].ToString(),
-                                        _reader["CEDULA_PERSONA"].ToString(),
-                                        _reader["CORREO_PERSONA"].ToString(),
-                                        _reader["TELEFONO_PERSONA"].ToString(),
-                                        _reader["GENERO_PERSONA"].ToString(),
-                                        new CUser(int.Parse(_reader["ID_USUARIO"].ToString()),
-                                                    _reader["NOMBRE_USUARIO"].ToString(),
-                                                    _reader["CLAVE_USUARIO"].ToString(),
-                                                    int.Parse(_reader["ID_TIPO_USUARIO"].ToString())));
-                    return person;
-                }
-                catch (Exception ex)
-                {
-                    throw new NotSupportedException(ex.Message);
-                }
-            });
-
-            task.Start();
-
-            return await task;
-            
+            }
+            catch (Exception ex)
+            {
+                throw new NotSupportedException(ex.Message);
+            }  
         }   
         
 
         public override async Task<int> Update()
         {
-            var task = new Task<int>(() => 
+
+            try
             {
-                try
-                {
-                    int rowCount = 0;
+                if (_connection.State.Equals(ConnectionState.Closed))
+                   await _connection.OpenAsync();
 
-                    if (_connection.State.Equals(ConnectionState.Closed))
-                        _connection.Open();
+                _command = new SqlCommand($@"UPDATE PERSONA SET
+                                                NOMBRE_PERSONA = '{name.SQLInyectionClearString()}',
+                                                FECHA_NAC_PERSONA = '{birthDay.SQLInyectionClearString()}',
+                                                CEDULA_PERSONA = '{idCard.SQLInyectionClearString()}',
+                                                CORREO_PERSONA = '{email.SQLInyectionClearString()}',
+                                                TELEFONO_PERSONA = '{phone.SQLInyectionClearString()}',
+                                                GENERO_PERSONA = '{genre.SQLInyectionClearString()}'
+                                                WHERE ID_PERSONA = {id}", _connection);
 
-                    _command = new SqlCommand($@"UPDATE PERSONA SET
-                                                    NOMBRE_PERSONA = '{name.SQLInyectionClearString()}',
-                                                    FECHA_NAC_PERSONA = '{birthDay.SQLInyectionClearString()}',
-                                                    CEDULA_PERSONA = '{idCard.SQLInyectionClearString()}',
-                                                    CORREO_PERSONA = '{email.SQLInyectionClearString()}',
-                                                    TELEFONO_PERSONA = '{phone.SQLInyectionClearString()}',
-                                                    GENERO_PERSONA = '{genre.SQLInyectionClearString()}'
-                                                    WHERE ID_PERSONA = {id}
-                                                    
-                                                SELECT @@ROWCOUNT AS [COLUMN];", _connection);
-                    //_command.ExecuteNonQuery();
-                    _reader = _command.ExecuteReader();
-
-                    while (_reader.Read())
-                        rowCount = int.Parse(_reader["COLUMN"].ToString());
-
-                    if (rowCount != 0)
-                        return id.Value;
-                    else
-                        return rowCount;
-                }
-                catch (Exception ex)
-                {
-                    throw new NotSupportedException(ex.Message);
-                }
-            });
-
-            task.Start();
-            return await task;
-            
+                return (await _command.ExecuteNonQueryAsync() != 0) ? id.Value : 0;
+            }
+            catch (Exception ex)
+            {
+                throw new NotSupportedException(ex.Message);
+            } 
         }
 
         public async static Task<List<CPerson>> Select(string searchString)
         {
-            var task = new Task<List<CPerson>>(() =>
-             {
-                 try
-                 {
-                     setConnection();
-                     _connection = connection;
+            try
+            {
+                setConnection();
+                _connection = connection;
 
-                     List<CPerson> people = new List<CPerson>();
+                if (_connection.State.Equals(ConnectionState.Open))
+                    await _connection.CloseAsync();
 
-                     if (_connection.State.Equals(ConnectionState.Closed))
-                         _connection.Open();
+                await _connection.OpenAsync();
 
-                     if (searchString == null)
-                         _command = new SqlCommand($"SELECT * FROM PERSONA", _connection);
-                     else
-                         _command = new SqlCommand($"SELECT * FROM PERSONA {searchString}", _connection);
+                List<CPerson> people = new List<CPerson>();
 
-                     //_command.ExecuteNonQuery();
-                     _reader = _command.ExecuteReader();
+                _command = new SqlCommand($"SELECT * FROM PERSONA {searchString}", _connection);
+                _reader = await _command.ExecuteReaderAsync();
 
-                     while (_reader.Read())
-                     {
-                         people.Add(new CPerson(int.Parse(_reader["ID_PERSONA"].ToString()),
-                                                 _reader["NOMBRE_PERSONA"].ToString(),
-                                                 _reader["FECHA_NAC_PERSONA"].ToString(),
-                                                 _reader["CEDULA_PERSONA"].ToString(),
-                                                 _reader["CORREO_PERSONA"].ToString(),
-                                                 _reader["TELEFONO_PERSONA"].ToString(),
-                                                 _reader["GENERO_PERSONA"].ToString())
-                                     );
-                     }
-                     return people;
-                 }
-                 catch (Exception ex)
-                 {
-                     throw new NotSupportedException(ex.Message);
-                 }
-             });
-
-            task.Start();
-            return await task;
+                while (await _reader.ReadAsync())
+                {
+                    people.Add(new CPerson(int.Parse(_reader["ID_PERSONA"].ToString()),
+                                            _reader["NOMBRE_PERSONA"].ToString(),
+                                            _reader["FECHA_NAC_PERSONA"].ToString(),
+                                            _reader["CEDULA_PERSONA"].ToString(),
+                                            _reader["CORREO_PERSONA"].ToString(),
+                                            _reader["TELEFONO_PERSONA"].ToString(),
+                                            _reader["GENERO_PERSONA"].ToString())
+                                );
+                }
+                return people;
+            }
+            catch (Exception ex)
+            {
+                throw new NotSupportedException(ex.Message);
+            }
             
         }
     }

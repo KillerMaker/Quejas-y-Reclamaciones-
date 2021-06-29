@@ -17,5 +17,10 @@ namespace Quejas_y_Reclamaciones.Controllers
         {
             return Ok(await CDepartment.Select(null));
         }
+        [HttpPost("Insertar")]
+        public async Task<IActionResult>post(CDepartment department)
+        {
+            return Ok(await department.Insert());
+        }
     }
 }

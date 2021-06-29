@@ -38,78 +38,52 @@ namespace Quejas_y_Reclamaciones.Models
 
         public static async Task<int> Delete(int id)
         {
-            var task = new Task<int>(()=> 
+            try
             {
-                try
-                {
-                    int rowCount = 0;
+                setConnection();
+                _connection = connection;
 
-                    setConnection();
-                    _connection = connection;
 
-                    if (_connection.State.Equals(ConnectionState.Closed))
-                        _connection.Open();
+                if (_connection.State.Equals(ConnectionState.Open))
+                    await _connection.CloseAsync();
 
-                    _command = new SqlCommand($@"DELETE FROM PRODUCTO WHERE ID_PRODUCTO={id}; 
-                                             SELECT @@ROWCOUNT AS [COLUMN]", _connection);
+                await _connection.OpenAsync();
 
-                    _reader = _command.ExecuteReader();
+                _command = new SqlCommand($@"DELETE FROM PRODUCTO WHERE ID_PRODUCTO={id};", _connection);
+               
+                return (await _command.ExecuteNonQueryAsync() != 0) ? id : 0;
 
-                    while (_reader.Read())
-                        rowCount =int.Parse(_reader["COLUMN"].ToString());
 
-                    if (rowCount != 0)
-                        return id;
-                    else
-                        return rowCount;
-
-                }
-                catch (Exception ex)
-                {
-                    throw new NotSupportedException(ex.Message);
-                }
-            });
-            task.Start();
-            return await task;
+            }
+            catch (Exception ex)
+            {
+                throw new NotSupportedException(ex.Message);
+            }
 
         }
 
         public override async Task<int> Insert()
         {
-            var task = new Task<int>(()=> 
+            try
             {
-                try
-                {
-                    int rowCount = 0;
 
-                    if (_connection.State.Equals(ConnectionState.Closed))
-                        _connection.Open();
+                if (_connection.State.Equals(ConnectionState.Closed))
+                    _connection.Open();
 
-                    _command = new SqlCommand($@"EXEC INSERTA_PRODUCTO
-                                              '{name.SQLInyectionClearString()}',
-                                              '{price}',
-                                              '{state}',
-                                              '{productType}';
-                                         SELECT @@ROWCOUNT AS [COLUMN];", _connection);
-                    //_command.ExecuteNonQuery();
-                    _reader = _command.ExecuteReader();
+                _command = new SqlCommand($@"EXEC INSERTA_PRODUCTO
+                                            '{name.SQLInyectionClearString()}',
+                                            '{price}',
+                                            '{state}',
+                                            '{productType}';", _connection);
 
-                    while (_reader.Read())
-                        rowCount =int.Parse(_reader["COLUMN"].ToString());
+                return (await _command.ExecuteNonQueryAsync() != 0) ? id.Value : 0;
 
-                    if (rowCount != 0)
-                        return id.Value;
-                    else
-                        return rowCount;
-                }
-                catch (Exception ex)
-                {
-                    throw new NotSupportedException(ex.Message);
-                }
-            });
-            task.Start();
+            }
+            catch (Exception ex)
+            {
+                throw new NotSupportedException(ex.Message);
+            }
 
-            return await task;
             
         }
 
@@ -122,95 +96,62 @@ namespace Quejas_y_Reclamaciones.Models
         /// <returns>La lista de objetos provenientes de la Base de datos</returns>
         public async static Task<List<CProduct>> Select(string searchString = null)
         {
-            var task = new Task<List<CProduct>>(()=> 
+            try
             {
-                try
+                setConnection();
+                _connection = connection;
+
+                if (_connection.State.Equals(ConnectionState.Open))
+                    await _connection.CloseAsync();
+
+                await _connection.OpenAsync();
+
+                List<CProduct> products = new List<CProduct>();
+
+                _command = new SqlCommand($"SELECT * FROM PRODUCTO+ {searchString}", _connection);
+
+
+                _reader = _command.ExecuteReader();
+
+                while (_reader.Read())
                 {
-                    setConnection();
-                    _connection = connection;
-
-                    int idProduct = 0;
-                    int? nullableIdProduct = null;
-
-                    List<CProduct> products = new List<CProduct>();
-
-                    if (_connection.State.Equals(ConnectionState.Closed))
-                        _connection.Open();
-
-                    if (searchString == null)
-                        _command = new SqlCommand($"SELECT * FROM PRODUCTO", _connection);
-                    else
-                        _command = new SqlCommand($"SELECT * FROM PRODUCTO+ {searchString}", _connection);
-
-                    //_command.ExecuteNonQuery();
-                    _reader = _command.ExecuteReader();
-
-                    while (_reader.Read())
-                    {
-                        if (int.TryParse(_reader["ID_PRODUCTO"].ToString(), out idProduct))
-                        {
-                            idProduct = int.Parse(_reader["ID_PRODUCTO"].ToString());
-                            nullableIdProduct = idProduct;
-                        }
-
-                        products.Add(new CProduct(nullableIdProduct,
-                                        _reader["NOMBRE_PRODUCTO"].ToString(),
-                                        decimal.Parse(_reader["PRECIO_PRODUCTO"].ToString()),
-                                        int.Parse(_reader["ID_ESTADO"].ToString()),
-                                        int.Parse(_reader["ID_TIPO_PRODUCTO"].ToString())));
-                    }
-
-                    return products;
+                    products.Add(new CProduct(int.Parse(_reader["ID_PRODUCTO"].ToString()),
+                                    _reader["NOMBRE_PRODUCTO"].ToString(),
+                                    decimal.Parse(_reader["PRECIO_PRODUCTO"].ToString()),
+                                    int.Parse(_reader["ID_ESTADO"].ToString()),
+                                    int.Parse(_reader["ID_TIPO_PRODUCTO"].ToString())));
                 }
-                catch (Exception ex)
-                {
-                    throw new NotSupportedException(ex.Message);
-                }
-            });
-            
-            task.Start();
-            return await task;
+
+                return products;
+            }
+            catch (Exception ex)
+            {
+                throw new NotSupportedException(ex.Message);
+            }
+
 
         }
         public override async Task<int> Update()
         {
-            var task = new Task<int>(()=>
+            try
             {
-                try
-                {
-                    int rowCount = 0;
+                if (_connection.State.Equals(ConnectionState.Closed))
+                    _connection.Open();
 
-                    if (_connection.State.Equals(ConnectionState.Closed))
-                        _connection.Open();
+                _command = new SqlCommand($@"UPDATE PRODUCTO SET 
+                                            NOMBRE_PRODUCTO = '{name.SQLInyectionClearString()}',
+                                            PRECIO_PRODUCTO = {price},
+                                            ID_ESTADO = {state},
+                                            ID_TIPO_PRODUCTO = {productType}
+                                            WHERE ID_PRODUCTO = {id};", _connection);
 
-                    _command = new SqlCommand($@"UPDATE PRODUCTO SET 
-                                                NOMBRE_PRODUCTO = '{name.SQLInyectionClearString()}',
-                                                PRECIO_PRODUCTO = {price},
-                                                ID_ESTADO = {state},
-                                                ID_TIPO_PRODUCTO = {productType}
-                                                WHERE ID_PRODUCTO = {id};
+                return (await _command.ExecuteNonQueryAsync() != 0) ? id.Value : 0;
 
-                                       SELECT @@ROWCOUNT AS [COLUMN];", _connection);
-                    //_command.ExecuteNonQuery();
-                    _reader = _command.ExecuteReader();
-
-                    while (_reader.Read())
-                        rowCount =int.Parse(_reader["COLUMN"].ToString());
-
-                    if (rowCount != 0)
-                        return id.Value;
-                    else
-                        return rowCount;
-
-                }
-                catch (Exception ex)
-                {
-                    throw new NotSupportedException(ex.Message);
-                }
-            });
-
-            task.Start();
-            return await task;
+            }
+            catch (Exception ex)
+            {
+                throw new NotSupportedException(ex.Message);
+            }
             
         }
 

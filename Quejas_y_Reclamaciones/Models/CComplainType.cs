@@ -30,125 +30,85 @@ namespace Quejas_y_Reclamaciones.Models
 
         public async override Task<int> Insert()
         {
-            var task = new Task<int>(()=> 
+            try
             {
-                try
-                {
+                if (_connection.State.Equals(ConnectionState.Closed))
+                   await _connection.OpenAsync();
 
-                    int rowCount = 0;
+                _command = new SqlCommand($@"EXEC INSERTA_TIPO_QUEJA
+                                                    '{description}',
+                                                    '{tittle}',
+                                                    {stateId};", _connection);
 
-                    if (_connection.State.Equals(ConnectionState.Closed))
-                        _connection.Open();
-
-                    _command = new SqlCommand($@"EXEC INSERTA_TIPO_QUEJA
-                                                      '{description}',
-                                                      '{tittle}',
-                                                       {stateId};
-
-                                       SELECT @@ROWCOUNT AS [COLUMN];", _connection);
-                    //_command.ExecuteNonQuery();
-                    _reader = _command.ExecuteReader();
-
-                    while (_reader.Read())
-                        rowCount = int.Parse(_reader["COLUMN"].ToString());
-
-                    if (rowCount != 0)
-                        return id.Value;
-                    else
-                        return rowCount;
-                }
-                catch ( Exception ex)
-                {
-
-                    throw new NotSupportedException(ex.Message);
-                }
-            });
-
-            return await task;
+                return (await _command.ExecuteNonQueryAsync() != 0) ? id.Value : 0;
+            }
+            catch ( Exception ex)
+            {
+                throw new NotSupportedException(ex.Message);
+            }
         }
 
         public async override Task<int> Update()
         {
-            var task = new Task<int>(() =>
+
+            try
             {
-                try
-                {
-                    int rowCount = 0;
+                if (_connection.State.Equals(ConnectionState.Closed))
+                   await _connection.OpenAsync();
 
-                    if (_connection.State.Equals(ConnectionState.Closed))
-                        _connection.Open();
+                _command = new SqlCommand($@"UPDATE TIPO_QUEJA SET 
+                                                DESCRIPCION_QUEJA={description},
+                                                TITULO_QUEJA ={tittle},
+                                                ID_ESTADO = {stateId}
+                                                WHERE ID_QUEJA={id};", _connection);
 
-                    _command = new SqlCommand($@"UPDATE TIPO_QUEJA SET 
-                                                    DESCRIPCION_QUEJA={description},
-                                                    TITULO_QUEJA ={tittle},
-                                                    ID_ESTADO = {stateId}
-                                                    WHERE ID_QUEJA={id};
-                                       SELECT @@ROWCOUNT AS [COLUMN];", _connection);
-                    //_command.ExecuteNonQuery();
-                    _reader = _command.ExecuteReader();
+                return (await _command.ExecuteNonQueryAsync() != 0) ? id.Value : 0;
+            }
+            catch (Exception ex)
+            {
 
-                    while (_reader.Read())
-                        rowCount = int.Parse(_reader["COLUMN"].ToString());
-
-                    if (rowCount != 0)
-                        return id.Value;
-                    else
-                        return rowCount;
-                }
-                catch (Exception ex)
-                {
-
-                    throw new NotSupportedException(ex.Message);
-                }
-            });
-
-            return await task;
+                throw new NotSupportedException(ex.Message);
+            }
         }
         
         public async static Task<List<CComplainType>> Select(string searchString)
         {
-            var task = new Task<List<CComplainType>>(() =>
+
+            try
             {
-                try
+                setConnection();
+                _connection = connection;
+
+                if (_connection.State.Equals(ConnectionState.Open))
+                    await _connection.CloseAsync();
+
+                await _connection.OpenAsync();
+
+                List<CComplainType> ComplainTypes = new List<CComplainType>();
+                CComplainType ComplainType;
+
+                _command = new SqlCommand($"SELECT * FROM TIPO_QUEJA {searchString}", _connection);
+
+                _reader = await _command.ExecuteReaderAsync();
+
+                while (await _reader.ReadAsync())
                 {
-                    setConnection();
-                    _connection = connection;
-
-                    List<CComplainType> ComplainTypes = new List<CComplainType>();
-                    CComplainType ComplainType;
-
-                    if (_connection.State.Equals(ConnectionState.Closed))
-                        _connection.Open();
-
-                    if (searchString == null)
-                        _command = new SqlCommand($"SELECT * FROM TIPO_QUEJA", _connection);
-                    else
-                        _command = new SqlCommand($"SELECT * FROM TIPO_QUEJA {searchString}", _connection);
-
-                    //_command.ExecuteNonQuery();
-                    _reader = _command.ExecuteReader();
-
-                    while (_reader.Read())
-                    {
-                        ComplainType = new CComplainType(
-                                           int.Parse(_reader["ID_TIPO_QUEJA"].ToString()),
-                                           _reader["TITULO_QUEJA"].ToString(),
-                                           _reader["DESCRIPCION_QUEJA"].ToString(),
-                                           int.Parse(_reader["ID_ESTADO"].ToString())
-                            );
-                        ComplainTypes.Add(ComplainType);
-                    }
-                    _connection.Close();
-                    return ComplainTypes;
+                    ComplainType = new CComplainType(
+                                        int.Parse(_reader["ID_TIPO_QUEJA"].ToString()),
+                                        _reader["TITULO_QUEJA"].ToString(),
+                                        _reader["DESCRIPCION_QUEJA"].ToString(),
+                                        int.Parse(_reader["ID_ESTADO"].ToString())
+                        );
+                    ComplainTypes.Add(ComplainType);
                 }
-                catch (Exception ex)
-                {
-                    throw new NotSupportedException(ex.Message);
-                }
-            });
 
-            task.Start();
-            return await task;
+                return ComplainTypes;
+            }
+            catch (Exception ex)
+            {
+                throw new NotSupportedException(ex.Message);
+            }
+
         }
     }
 }

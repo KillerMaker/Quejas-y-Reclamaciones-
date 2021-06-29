@@ -78,9 +78,9 @@ namespace Quejas_y_Reclamaciones.Models
                        _connection.Open();
 
                         _command = new SqlCommand($@"IF EXISTS (SELECT TOP 1 * FROM USUARIO WHERE NOMBRE_USUARIO ='{userName.SQLInyectionClearString()}')
-                                                SELECT 1 AS EXISTENCIA_USUARIO
-                                             ELSE
-                                                SELECT 0 AS EXISTENCIA_USUARIO", _connection);
+                                                        SELECT 1 AS EXISTENCIA_USUARIO
+                                                    ELSE
+                                                        SELECT 0 AS EXISTENCIA_USUARIO", _connection);
 
                         _reader = _command.ExecuteReader();
                         while (_reader.Read())

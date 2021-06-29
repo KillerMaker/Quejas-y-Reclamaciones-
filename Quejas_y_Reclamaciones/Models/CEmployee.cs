@@ -10,6 +10,7 @@ namespace Quejas_y_Reclamaciones.Models
     public class CEmployee :CPerson
     {
         //Atributos de Constructor
+
         public int idDepartment { get; set; }
 
         //Atributos opcionales
@@ -25,177 +26,121 @@ namespace Quejas_y_Reclamaciones.Models
 
         public async override Task<int> Update()
         {
-
-            await base.Update();
-
-            var task = new Task<int>(()=>
+            try
             {
-                int rowCount = 0;
-                try
-                {
-                    if (_connection.State.Equals(ConnectionState.Closed))
-                        _connection.Open();
+                await base.Update();
 
-                    _command = new SqlCommand($@"UPDATE EMPLEADO SET 
-                                            ID_DEPARTAMENTO={idDepartment}
-                                            WHERE ID_PERSONA ={id};
+                if (_connection.State.Equals(ConnectionState.Closed))
+                    _connection.Open();
 
-                                            SELECT @@ROWCOUNT AS [COLUMN]", _connection);
+                _command = new SqlCommand($@"UPDATE EMPLEADO SET 
+                                        ID_DEPARTAMENTO={idDepartment}
+                                        WHERE ID_PERSONA ={id};", _connection);
 
-                    _reader = _command.ExecuteReader();
+                return (await _command.ExecuteNonQueryAsync() != 0) ? id.Value : 0;
 
-                    while (_reader.Read())
-                        rowCount =int.Parse(_reader["COLUMN"].ToString());
-
-                    if (rowCount != 0)
-                        return id.Value;
-                    else
-                        return rowCount;
-                }
-                catch (Exception ex)
-                {
-                    throw new NotSupportedException(ex.Message);
-                }
-            });
-
-            task.Start();
-
-            return await task;
+            }
+            catch (Exception ex)
+            {
+                throw new NotSupportedException(ex.Message);
+            }
             
         }
 
         public async override Task<CPerson> Insert()
         {
-            var task = new Task<CPerson>(()=> 
-            {
-                if (_connection.State.Equals(ConnectionState.Closed))
-                    _connection.Open();
+            if (_connection.State.Equals(ConnectionState.Closed))
+                _connection.Open();
 
-                _command = new SqlCommand($@"EXEC INSERTA_EMPLEADO
-                                              '{name}',
-                                              '{birthDay}',
-                                              '{idCard}',
-                                              '{email}',
-                                              '{phone}',
-                                              '{genre}',
-                                              '{user.userName}',
-                                              '{user.password}',
-                                               {idDepartment};
+            _command = new SqlCommand($@"EXEC INSERTA_EMPLEADO
+                                            '{name}',
+                                            '{birthDay}',
+                                            '{idCard}',
+                                            '{email}',
+                                            '{phone}',
+                                            '{genre}',
+                                            '{user.userName}',
+                                            '{user.password}',
+                                            {idDepartment};", _connection);
 
-                                        SELECT * FROM VISTA_EMPLEADO 
-                                              WHERE ID_PERSONA=(SELECT MAX (ID_PERSONA) FROM PERSONA_DEPARTAMENTO);", _connection);
-
-                _reader = _command.ExecuteReader();
-
-                CEmployee employee = null;
-
-                while (_reader.Read())
-                    employee = new CEmployee(
-                                         int.Parse(_reader["ID_PERSONA"].ToString()),
-                                         _reader["NOMBRE_PERSONA"].ToString(),
-                                         _reader["FECHA_NAC_PERSONA"].ToString(),
-                                         _reader["CEDULA_PERSONA"].ToString(),
-                                         _reader["CORREO_PERSONA"].ToString(),
-                                         _reader["TELEFONO_PERSONA"].ToString(),
-                                         _reader["GENERO_PERSONA"].ToString(),
-                                         int.Parse(_reader["ID_DEPARTAMENTO"].ToString()),
-                                         new CUser(
-                                                   int.Parse(_reader["ID_USUARIO"].ToString()),
-                                                   _reader["NOMBRE_USUARIO"].ToString(),
-                                                   _reader["CLAVE_USUARIO"].ToString(),
-                                                   int.Parse(_reader["ID_TIPO_USUARIO"].ToString())));
-                return employee;
-            });
-
-            task.Start();
-            return await task;
-            
+            return (await _command.ExecuteNonQueryAsync() != 0) ? this : null;
         }
         public new static async Task<int> Delete(int id)
         {
-            var task = new Task<Task<int>>(async()=> 
+            try
             {
-                try
-                {
-                    setConnection();
-                    _connection.Close();
-                    if (_connection.State.Equals(ConnectionState.Closed))
-                        _connection.Open();
+                setConnection();
+                _connection = connection;
 
-                    _command = new SqlCommand($@"EXEC ELIMINA_EMPLEADO {id}", _connection);
+                if (_connection.State.Equals(ConnectionState.Open))
+                    await _connection.CloseAsync();
 
-                    await _command.ExecuteReaderAsync();
-                    await CPerson.Delete(id);
-                    _connection.Close();
+                await _connection.OpenAsync();
 
-                    return await CPerson.Delete(id);
-                }
-                catch (Exception ex)
-                {
-                    throw new NotSupportedException(ex.Message);
-                }
-            });
+                _command = new SqlCommand($@"EXEC ELIMINA_EMPLEADO {id}", _connection);
 
-            task.Start();
-            return await task.Result;
+                return (await _command.ExecuteNonQueryAsync() != 0) ?await CPerson.Delete(id) : 0;
+            }
+            catch (Exception ex)
+            {
+                throw new NotSupportedException(ex.Message);
+            }
+
         }
 
         public async new static Task<List<CEmployee>> Select(string searchString)
         {
-            var task = new Task<List<CEmployee>>(()=> 
+
+            try
             {
-                try
+                setConnection();
+                _connection = connection;
+
+                if (_connection.State.Equals(ConnectionState.Open))
+                    await _connection.CloseAsync();
+
+                await _connection.OpenAsync();
+
+                List<CEmployee> employees = new List<CEmployee>();
+                CEmployee employee;
+
+
+                _command = new SqlCommand($"SELECT * FROM VISTA_EMPLEADO {searchString}", _connection);
+
+                _reader =await _command.ExecuteReaderAsync();
+
+                while(await _reader.ReadAsync())
                 {
-                    _connection = new SqlConnection("Data Source=DESKTOP-7V51383\\SQLEXPRESS;Initial Catalog=Quejas&Reclamaciones;Integrated Security=True");
-
-                    if (_connection.State.Equals(ConnectionState.Closed))
-                        _connection.Open();
-
-                    List<CEmployee> employees = new List<CEmployee>();
-                    CEmployee employee;
-
-                    if(searchString== null)
-                        _command = new SqlCommand($"SELECT * FROM VISTA_EMPLEADO ", _connection);
-                    else
-                        _command = new SqlCommand($"SELECT * FROM VISTA_EMPLEADO {searchString}", _connection);
-
-                    _reader = _command.ExecuteReader();
-
-                    while(_reader.Read())
-                    {
-                        employee = new CEmployee(
-                                        int.Parse(_reader["ID_PERSONA"].ToString()),
-                                        _reader["NOMBRE_PERSONA"].ToString(),
-                                        _reader["FECHA_NAC_PERSONA"].ToString(),
-                                        _reader["CEDULA_PERSONA"].ToString(),
-                                        _reader["CORREO_PERSONA"].ToString(),
-                                        _reader["TELEFONO_PERSONA"].ToString(),
-                                        _reader["GENERO_PERSONA"].ToString(),
-                                        int.Parse(_reader["ID_DEPARTAMENTO"].ToString()),
-                                        new CUser(
-                                                  int.Parse(_reader["ID_USUARIO"].ToString()),
-                                                  _reader["NOMBRE_USUARIO"].ToString(),
-                                                  _reader["CLAVE_USUARIO"].ToString(),
-                                                  int.Parse(_reader["ID_TIPO_USUARIO"].ToString())))
-                                                  {
-                                                        departmentName=_reader["NOMBRE_DEPARTAMENTO"].ToString(),
-                                                        idState=int.Parse(_reader["ID_ESTADO"].ToString())
-                                                  };
-                        employees.Add(employee);
-
-                    }
-                    return employees;
+                    employee = new CEmployee(
+                                    int.Parse(_reader["ID_PERSONA"].ToString()),
+                                    _reader["NOMBRE_PERSONA"].ToString(),
+                                    _reader["FECHA_NAC_PERSONA"].ToString(),
+                                    _reader["CEDULA_PERSONA"].ToString(),
+                                    _reader["CORREO_PERSONA"].ToString(),
+                                    _reader["TELEFONO_PERSONA"].ToString(),
+                                    _reader["GENERO_PERSONA"].ToString(),
+                                    int.Parse(_reader["ID_DEPARTAMENTO"].ToString()),
+                                    new CUser(
+                                                int.Parse(_reader["ID_USUARIO"].ToString()),
+                                                _reader["NOMBRE_USUARIO"].ToString(),
+                                                _reader["CLAVE_USUARIO"].ToString(),
+                                                int.Parse(_reader["ID_TIPO_USUARIO"].ToString())))
+                                                {
+                                                    departmentName=_reader["NOMBRE_DEPARTAMENTO"].ToString(),
+                                                    idState=int.Parse(_reader["ID_ESTADO"].ToString())
+                                                };
+                    employees.Add(employee);
 
                 }
-                catch (Exception ex)
-                {
+                return employees;
 
-                    throw new NotSupportedException(ex.Message);
-                }
-            });
+            }
+            catch (Exception ex)
+            {
 
-            task.Start();
-            return await task;
+                throw new NotSupportedException(ex.Message);
+            }
+
         }
     }
 }

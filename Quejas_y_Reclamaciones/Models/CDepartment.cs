@@ -28,34 +28,24 @@ namespace Quejas_y_Reclamaciones.Models
 
         public async override Task<int> Insert()
         {
-            var task = new Task<int>(() => 
+
+            try 
             {
-                try 
-                {
-                    if (_connection.State.Equals(ConnectionState.Closed))
-                        _connection.Open();
-                    int insertedId = 0;
+                if (_connection.State.Equals(ConnectionState.Closed))
+                   await _connection.OpenAsync();
 
-                    _command = new SqlCommand($@"EXEC INSERTA_DEPARTAMENTO 
-                                                        '{departmentName}'
-                                                        ,{managerId};
 
-                                                SELECT MAX(ID_DEPARTAMENTO) AS [COLUMN] FROM DEPARTAMENTO",_connection);
-                    _reader = _command.ExecuteReader();
+                _command = new SqlCommand($@"EXEC INSERTA_DEPARTAMENTO 
+                                                    '{departmentName}'
+                                                    ,{managerId};",_connection);
 
-                    while(_reader.Read())
-                        insertedId =int.Parse(_reader["COLUMN"].ToString());
+                return (await _command.ExecuteNonQueryAsync() != 0) ? id.Value : 0;
 
-                    return insertedId;
-
-                }
-                catch(Exception ex)
-                {
-                    throw new NotSupportedException(ex.Message);
-                }
-            });
-
-            return await task;
+            }
+            catch(Exception ex)
+            {
+                throw new NotSupportedException(ex.Message);
+            }
         }
 
         public override Task<int> Update()
@@ -65,42 +55,42 @@ namespace Quejas_y_Reclamaciones.Models
 
         public async static Task<List<CDepartment>> Select(string searchString)
         {
-            var task = new Task<List<CDepartment>>(()=> 
+
+            try 
             {
-                try 
+                setConnection();
+                _connection = connection;
+
+                if (_connection.State.Equals(ConnectionState.Open))
+                    await _connection.CloseAsync();
+
+                await _connection.OpenAsync();
+
+                List<CDepartment> departments = new List<CDepartment>();
+                CDepartment department = null;
+
+                _command = new SqlCommand($"SELECT * FROM DEPARTAMENTO {searchString}",_connection);
+
+                _reader = await _command.ExecuteReaderAsync();
+
+                while(await _reader.ReadAsync())
                 {
-                    setConnection();
-                    _connection = connection;
+                    department = new CDepartment(
+                        int.Parse(_reader["ID_DEPARTAMENTO"].ToString()),
+                        _reader["NOMBRE_DEPARTAMENTO"].ToString(),
+                        int.Parse(_reader["ID_ENCARGADO"].ToString()));
 
-                    List<CDepartment> departments = new List<CDepartment>();
-                    CDepartment department = null;
-
-                    _connection.Open();
-                    _command = new SqlCommand($"SELECT * FROM DEPARTAMENTO",_connection);
-
-                    _reader = _command.ExecuteReader();
-
-                    while(_reader.Read())
-                    {
-                        department = new CDepartment(
-                            int.Parse(_reader["ID_DEPARTAMENTO"].ToString()),
-                            _reader["NOMBRE_DEPARTAMENTO"].ToString(),
-                            int.Parse(_reader["ID_ENCARGADO"].ToString()));
-
-                        departments.Add(department);
-                    }
-                    
-                    _connection.Close();
-                    return departments;
-
+                    departments.Add(department);
                 }
-                catch (Exception ex)
-                {
-                    throw new NotSupportedException(ex.Message);
-                }
-            });
-            task.Start();
-            return await task;
+
+                return departments;
+
+            }
+            catch (Exception ex)
+            {
+                throw new NotSupportedException(ex.Message);
+            }
+
         }
     }
 }
