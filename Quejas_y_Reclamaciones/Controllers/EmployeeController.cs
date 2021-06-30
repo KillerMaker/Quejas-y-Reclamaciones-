@@ -33,7 +33,7 @@ namespace Quejas_y_Reclamaciones.Controllers
         [HttpGet("Mostrar/{searchString?}")]
         public async Task<IActionResult> Get(string searchString)
         {
-            searchString = (searchString != null) ? searchString += "AND ID_ESTADO!=3" : "WHERE ID_ESTADO=3";
+            searchString = (searchString != null) ? searchString += "AND ID_ESTADO!=3" : "WHERE ID_ESTADO!=3";
 
             if (CEmployee.Select(searchString).Result.Count.Equals(0))
                 return BadRequest("Recurso no Encontrado");

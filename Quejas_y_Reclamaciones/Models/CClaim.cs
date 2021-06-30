@@ -57,7 +57,7 @@ namespace Quejas_y_Reclamaciones.Models
                                                 {claimType},
                                                 {idState};", _connection);
 
-                return (await _command.ExecuteNonQueryAsync() != 0) ? id.Value : 0;
+                return (await _command.ExecuteNonQueryAsync() != 0) ? 1 : 0;
 
             }
             catch(Exception ex)

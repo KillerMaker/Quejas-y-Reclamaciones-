@@ -34,6 +34,7 @@ namespace Quejas_y_Reclamaciones.Models
             this.productType = productType;
 
             setConnection();
+            _connection = connection;
         }
 
         public static async Task<int> Delete(int id)
@@ -76,7 +77,7 @@ namespace Quejas_y_Reclamaciones.Models
                                             '{state}',
                                             '{productType}';", _connection);
 
-                return (await _command.ExecuteNonQueryAsync() != 0) ? id.Value : 0;
+                return (await _command.ExecuteNonQueryAsync() != 0) ? 1 : 0;
 
             }
             catch (Exception ex)

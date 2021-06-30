@@ -13,9 +13,10 @@ namespace Quejas_y_Reclamaciones.Models
 
         public int idDepartment { get; set; }
 
-        //Atributos opcionales
         public string departmentName { get; set; }
         public int idState { get; set; }
+
+        public int managerId { get; set; }
 
         //Construtor
         public CEmployee(int? id, string name, string birthDay, string idCard, string email, string phone, string genre, int idDepartment, CUser user = null)
@@ -127,7 +128,8 @@ namespace Quejas_y_Reclamaciones.Models
                                                 int.Parse(_reader["ID_TIPO_USUARIO"].ToString())))
                                                 {
                                                     departmentName=_reader["NOMBRE_DEPARTAMENTO"].ToString(),
-                                                    idState=int.Parse(_reader["ID_ESTADO"].ToString())
+                                                    idState=int.Parse(_reader["ID_ESTADO"].ToString()),
+                                                    managerId=(int)_reader["ID_EMPLEADO"]
                                                 };
                     employees.Add(employee);
 
