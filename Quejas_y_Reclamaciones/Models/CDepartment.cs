@@ -17,6 +17,8 @@ namespace Quejas_y_Reclamaciones.Models
         public string departmentName { get; set; }
         public int managerId { get; set; }
 
+        public string managerName { get; set; }
+
         public CDepartment(int? id,string departmentName,int managerId )
         {
             this.id = id;
@@ -70,7 +72,9 @@ namespace Quejas_y_Reclamaciones.Models
                 List<CDepartment> departments = new List<CDepartment>();
                 CDepartment department = null;
 
-                _command = new SqlCommand($"SELECT * FROM DEPARTAMENTO {searchString}",_connection);
+                _command = new SqlCommand($@"SELECT * FROM DEPARTAMENTO D 
+                                                    INNER JOIN EMPLEADO E ON E.ID_EMPLEADO = D.ID_ENCARGADO
+                                                    INNER JOIN PERSONA P ON P.ID_PERSONA=E.ID_PERSONA{searchString}",_connection);
 
                 _reader = await _command.ExecuteReaderAsync();
 
@@ -79,7 +83,8 @@ namespace Quejas_y_Reclamaciones.Models
                     department = new CDepartment(
                         int.Parse(_reader["ID_DEPARTAMENTO"].ToString()),
                         _reader["NOMBRE_DEPARTAMENTO"].ToString(),
-                        int.Parse(_reader["ID_ENCARGADO"].ToString()));
+                        int.Parse(_reader["ID_ENCARGADO"].ToString()))
+                    {managerName=(string)_reader["NOMBRE_PERSONA"] };
 
                     departments.Add(department);
                 }
