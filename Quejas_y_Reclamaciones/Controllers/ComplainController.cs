@@ -42,7 +42,7 @@ namespace Quejas_y_Reclamaciones.Controllers
         [HttpGet("Mostrar")]
         public async Task<IActionResult> get(string searchString)
         {
-            searchString += "AND ID_ESTADO !=3";
+            searchString = (searchString != null) ? searchString += "AND ID_ESTADO!=3" : "WHERE ID_ESTADO=3";
 
             if (CComplain.Select(searchString).Result.Count.Equals(0))
                 return NotFound("Recurso no encontrado");

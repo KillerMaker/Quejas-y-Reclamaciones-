@@ -151,6 +151,7 @@ namespace Quejas_y_Reclamaciones.Models
                 await _connection.OpenAsync();
 
                 List<CPerson> people = new List<CPerson>();
+                searchString = (searchString != null) ? searchString +="AND ID_PERSONA NOT IN(SELECT ID_PERSONA FROM EMPLEADO)" : "WHERE ID_PERSONA NOT IN(SELECT ID_PERSONA FROM EMPLEADO)";
 
                 _command = new SqlCommand($"SELECT * FROM PERSONA {searchString}", _connection);
                 _reader = await _command.ExecuteReaderAsync();
