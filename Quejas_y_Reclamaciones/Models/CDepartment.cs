@@ -98,5 +98,23 @@ namespace Quejas_y_Reclamaciones.Models
             }
 
         }
+        public async static Task<int>Delete(int id)
+        {
+            try
+            {
+                if (_connection.State.Equals(ConnectionState.Closed))
+                    await _connection.OpenAsync();
+
+
+                _command = new SqlCommand($@"UPDATE DEPARTAMENTO SET ID_ESTADO = 3 WHERE ID_DEPARTAMENTO = {id}");
+
+                return (await _command.ExecuteNonQueryAsync() != 0) ? 1 : 0;
+
+            }
+            catch (Exception ex)
+            {
+                throw new NotSupportedException(ex.Message);
+            }
+        }
     }
 }
