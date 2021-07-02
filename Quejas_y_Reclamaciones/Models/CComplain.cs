@@ -4,6 +4,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations;
 
 namespace Quejas_y_Reclamaciones.Models
 {
@@ -17,16 +18,28 @@ namespace Quejas_y_Reclamaciones.Models
         public int? id { get; set; }
         public int idPerson { get; set; }
         public int idDepartment { get; set; }
+
+        [StringLength(50)]
         public string date { get; set; }
+
+        [StringLength(200)]
         public string description { get; set; }
+
         public int idComplainType { get; set; }
         public int idState { get; set; }
 
 
         //Atributos opcionales
+        [StringLength(50)]
         public string stateTittle { get; set; }
+
+        [StringLength(50)]
         public string departmentName { get; set; }
+
+        [StringLength(50)]
         public string complainTypeName { get; set; }
+
+        [StringLength(50)]
         public string PersonName { get; set; }
 
 

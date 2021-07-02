@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Data;
 using System.Data.SqlClient;
+using System.ComponentModel.DataAnnotations;
 
 namespace Quejas_y_Reclamaciones.Models
 {
@@ -14,9 +15,12 @@ namespace Quejas_y_Reclamaciones.Models
         protected static SqlDataReader _reader;
 
         public int? id { get; set; }
+
+        [StringLength(50)]
         public string departmentName { get; set; }
         public int managerId { get; set; }
 
+        [StringLength(50)]
         public string managerName { get; set; }
 
         public CDepartment(int? id,string departmentName,int managerId )
@@ -74,7 +78,7 @@ namespace Quejas_y_Reclamaciones.Models
 
                 _command = new SqlCommand($@"SELECT * FROM DEPARTAMENTO D 
                                                     INNER JOIN EMPLEADO E ON E.ID_EMPLEADO = D.ID_ENCARGADO
-                                                    INNER JOIN PERSONA P ON P.ID_PERSONA=E.ID_PERSONA{searchString}",_connection);
+                                                    INNER JOIN PERSONA P ON P.ID_PERSONA=E.ID_PERSONA {searchString}",_connection);
 
                 _reader = await _command.ExecuteReaderAsync();
 
@@ -102,13 +106,18 @@ namespace Quejas_y_Reclamaciones.Models
         {
             try
             {
-                if (_connection.State.Equals(ConnectionState.Closed))
-                    await _connection.OpenAsync();
+                setConnection();
+                _connection = connection;
+
+                if (_connection.State.Equals(ConnectionState.Open))
+                    await _connection.CloseAsync();
+
+                await _connection.OpenAsync();
 
 
-                _command = new SqlCommand($@"UPDATE DEPARTAMENTO SET ID_ESTADO = 3 WHERE ID_DEPARTAMENTO = {id}");
+                _command = new SqlCommand($@"UPDATE DEPARTAMENTO SET ID_ESTADO = 3 WHERE ID_DEPARTAMENTO = {id}",_connection);
 
-                return (await _command.ExecuteNonQueryAsync() != 0) ? 1 : 0;
+                return (await _command.ExecuteNonQueryAsync() != 0) ? id : 0;
 
             }
             catch (Exception ex)

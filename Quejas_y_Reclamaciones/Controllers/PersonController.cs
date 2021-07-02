@@ -13,35 +13,31 @@ namespace Quejas_y_Reclamaciones.Controllers
     public class PersonController : ControllerBase
     {
         [HttpPost("Insertar")]
-        public async Task<IActionResult> Post(CPerson person) 
+        public async Task<IActionResult> Post(CPerson obj) 
         {
-            if (person.user == null)
+            if (obj.user == null)
                 return BadRequest("Informacion de usuario Insuficiente");
             else
-                return Ok(await person.Insert());
+                return Ok(await obj.Insert());
         } 
 
         [HttpDelete("Eliminar/{id:int}")]
-        public async Task<IActionResult> delete(int? id)
+        public async Task<IActionResult> Delete(int id)
         {
-            if (!id.HasValue)
-                return BadRequest("Informacion de busqueda Insuficiente Falta Id");
-            else
-                return Ok(await CPerson.Delete(id.Value));
-
+            return Ok(await CPerson.Delete(id));
         }
 
         [HttpPut("Actualizar")]
-        public async Task<IActionResult> put(CPerson person)
+        public async Task<IActionResult> Put(CPerson obj)
         {
-            if (!person.id.HasValue)
+            if (!obj.id.HasValue)
                 return BadRequest("Informacion de busqueda Insuficiente Falta Id");
             else
-                return Ok(await person.Update());
+                return Ok(await obj.Update());
         }
 
         [HttpGet("Mostrar/{searchString?}")]
-        public async Task<IActionResult> get(string searchString)
+        public async Task<IActionResult> Get(string searchString)
         {
             if (CPerson.Select(searchString).Result.Count.Equals(0))
                 return NotFound("Recurso no encontrado");

@@ -13,25 +13,25 @@ namespace Quejas_y_Reclamaciones.Controllers
     public class ComplainController : ControllerBase
     {
         [HttpPost("Insertar")]
-        public async Task<IActionResult> post(CComplain complain)
+        public async Task<IActionResult> Post(CComplain obj)
         {
-            if (complain.id.HasValue)
+            if (obj.id.HasValue)
                 return BadRequest("Informacion Redundante (Id)");
             else
-                return Ok(await complain.Insert());
+                return Ok(await obj.Insert());
         }
 
         [HttpPut("Actualizar")]
-        public async Task<IActionResult> put(CComplain complain)
+        public async Task<IActionResult> Put(CComplain obj)
         {
-            if (!complain.id.HasValue)
+            if (!obj.id.HasValue)
                 return BadRequest("Informacion Insuficiente de la queja (ID)");
             else
-                return Ok(await complain.Update());
+                return Ok(await obj.Update());
         }
 
         [HttpDelete("Eliminar/{id:int}")]
-        public async Task<IActionResult> delete(int? id)
+        public async Task<IActionResult> Delete(int? id)
         {
             if (!id.HasValue)
                 return BadRequest("Informacion Insuficiente de la queja (ID)");
@@ -40,7 +40,7 @@ namespace Quejas_y_Reclamaciones.Controllers
         }
 
         [HttpGet("Mostrar")]
-        public async Task<IActionResult> get(string searchString)
+        public async Task<IActionResult> Get(string searchString)
         {
             searchString = (searchString != null) ? searchString += "AND ID_ESTADO!=3" : "WHERE ID_ESTADO=3";
 
@@ -50,7 +50,7 @@ namespace Quejas_y_Reclamaciones.Controllers
                 return Ok(await CComplain.Select(searchString));
         }
         [HttpGet("Mostrar/{id?}")]
-        public async Task<IActionResult> get(int id)
+        public async Task<IActionResult> Get(int id)
         {
           string searchString = $"WHERE ID_PERSONA= {id} AND ID_ESTADO !=3";
           return  Ok(await CComplain.Select(searchString));

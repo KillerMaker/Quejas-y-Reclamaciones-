@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Data;
 using System.Data.SqlClient;
+using System.ComponentModel.DataAnnotations;
 
 namespace Quejas_y_Reclamaciones.Models
 {
@@ -13,7 +14,11 @@ namespace Quejas_y_Reclamaciones.Models
         protected static SqlCommand _command;
         protected static SqlDataReader _reader;
         public int? id { get; set; }
+
+        [StringLength(50)]
         public string tittle { get; set; }
+
+        [StringLength(50)]
         public string description { get; set; }
         public int stateId { get; set; }
 

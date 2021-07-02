@@ -32,19 +32,6 @@ namespace Quejas_y_Reclamaciones.Models
 
         [StringLength(1)]
         public string genre { get; set; }
-
-        //public CPerson(int id, string name, string birthDay, string idCard, string email, string phone, string genre)
-        //{
-        //    this.id = id;
-        //    this.name = name;
-        //    this.birthDay = birthDay;
-        //    this.idCard = idCard;
-        //    this.email = email;
-        //    this.phone = phone;
-        //    this.genre = genre;
-
-        //    _connection = new SqlConnection("Data Source=DESKTOP-7V51383\\SQLEXPRESS;Initial Catalog=Quejas&Reclamaciones;Integrated Security=True");
-        //}
         
         [JsonConstructor]
         public CPerson(int? id,string name, string birthDay, string idCard, string email, string phone, string genre, CUser user=null)

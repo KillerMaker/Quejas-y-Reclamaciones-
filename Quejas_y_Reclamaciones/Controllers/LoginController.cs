@@ -14,11 +14,11 @@ namespace Quejas_y_Reclamaciones.Controllers
      public class LoginController : ControllerBase
     {
         [HttpPost]
-        public async Task<IActionResult> Post(CLogin login)
+        public async Task<IActionResult> Post(CUser user)
         {
 
-            bool checkUserName =await login.CheckUserName();
-            bool checkPassword = await login.CheckPassword();
+            bool checkUserName =await user.CheckUserName();
+            bool checkPassword = await user.CheckPassword();
 
             if (!checkUserName)
                 return NotFound("Usuario Invalido");
@@ -27,7 +27,7 @@ namespace Quejas_y_Reclamaciones.Controllers
                 return NotFound("Clave Incorrecta");
 
             else if (checkUserName && checkPassword)
-                return Ok(await login.loginIntoApplication());
+                return Ok(await user.loginIntoApplication());
 
             return NotFound();
 

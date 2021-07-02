@@ -11,7 +11,16 @@ namespace Quejas_y_Reclamaciones.Models
     {
         protected static SqlConnection connection;
 
+        /// <summary>
+        /// Inserta en la base de datos los datos del objeto CEntity
+        /// </summary>
+        /// <returns>Devuelve T</returns>
         public abstract Task<T> Insert();
+
+        /// <summary>
+        /// Actualiza los datos del objeto CEntity donde el id de este coincida en la base de datos
+        /// </summary>
+        /// <returns>El id del registro actualizado en la base de datos</returns>
         public abstract Task<int> Update();
 
         protected static void setConnection()

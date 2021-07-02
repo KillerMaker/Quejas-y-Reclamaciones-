@@ -13,21 +13,21 @@ namespace Quejas_y_Reclamaciones.Controllers
     public class EmployeeController : ControllerBase
     {
         [HttpPost("Insertar")]
-        public async Task<IActionResult> Post(CEmployee employee)
+        public async Task<IActionResult> Post(CEmployee obj)
         {
-            if (employee.id.HasValue)
+            if (obj.id.HasValue)
                 return BadRequest("Informacion redundante (ID)");
             else
-                return Ok(await employee.Insert());
+                return Ok(await obj.Insert());
         }
 
         [HttpPut("Actualizar")]
-        public async Task<IActionResult> Put(CEmployee employee)
+        public async Task<IActionResult> Put(CEmployee obj)
         {
-            if (!employee.id.HasValue)
+            if (!obj.id.HasValue)
                 return BadRequest("Informacion Insuficiente (ID)");
             else
-                return Ok(await employee.Update());
+                return Ok(await obj.Update());
         }
 
         [HttpGet("Mostrar/{searchString?}")]

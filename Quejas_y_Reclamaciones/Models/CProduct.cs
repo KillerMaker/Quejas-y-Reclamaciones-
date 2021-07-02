@@ -88,13 +88,6 @@ namespace Quejas_y_Reclamaciones.Models
             
         }
 
-
-        /// <summary>
-        /// Hara un SELECT * de la vista de el objeto en la base de datos
-        /// </summary>
-        /// <param name="searchString">Sirve para ingresar los parametros de busqueda
-        /// tales como WHERE y HAVING</param>
-        /// <returns>La lista de objetos provenientes de la Base de datos</returns>
         public async static Task<List<CProduct>> Select(string searchString = null)
         {
             try

@@ -10,15 +10,15 @@ namespace Quejas_y_Reclamaciones.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ClaimController : ControllerBase
+    public class ClaimController : ControllerBase,IController<CClaim>
     {
         [HttpPost("Insertar")]
-        public async Task<IActionResult> Post(CClaim claim)
+        public async Task<IActionResult> Post(CClaim obj)
         {
-            if (claim.id.HasValue)
+            if (obj.id.HasValue)
                 return BadRequest("Informacion redundante (ID)");
             else
-                return Ok(await claim.Insert());
+                return Ok(await obj.Insert());
         }
         
         [HttpGet("Mostrar")]
@@ -43,12 +43,12 @@ namespace Quejas_y_Reclamaciones.Controllers
         }
 
         [HttpPut("Actualizar")]
-        public async Task<IActionResult> Put(CClaim claim)
+        public async Task<IActionResult> Put(CClaim obj)
         {
-            if (!claim.id.HasValue)
+            if (!obj.id.HasValue)
                 return BadRequest("Informacion Insuficiente (ID)");
             else
-                return Ok(await claim.Update());
+                return Ok(await obj.Update());
         }
 
         [HttpDelete("Eliminar/{id}")]

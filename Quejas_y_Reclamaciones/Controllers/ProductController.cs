@@ -13,13 +13,9 @@ namespace Quejas_y_Reclamaciones.Controllers
     public class ProductController : ControllerBase
     {   
         [HttpDelete("Eliminar/{id:int}")]
-        public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> Delete(int id)
         {
-            if (!id.HasValue)
-                return BadRequest("Informacion de busqueda insuficiente (ID)");
-            else
-                return Ok(await CProduct.Delete(id.Value));
-
+            return Ok(await CProduct.Delete(id));
         }
         
         [HttpGet("Mostrar")]
@@ -30,24 +26,34 @@ namespace Quejas_y_Reclamaciones.Controllers
             else
                 return Ok(await CProduct.Select(searchString));
         }
-
-        
-        [HttpPost("Insertar")]
-        public async Task<IActionResult> Post(CProduct product)
+        [HttpGet("Mostrar/{id:int}")]
+        public async Task<IActionResult> Get(int id)
         {
-            if (product.id.HasValue)
-                return BadRequest("Informacion Redundante (ID)");
+            string searchString = $"WHERE ID_PRODUCTO ={id}";
+            if (CProduct.Select(searchString).Result.Count.Equals(0))
+                return NotFound("Recurso no encontrado");
             else
-                return Ok(await product.Insert());
+                return Ok(await CProduct.Select(searchString));
         }
 
-        [HttpPut("Actualizar")]
-        public async Task<IActionResult> Put(CProduct product)
+
+        [HttpPost("Insertar")]
+        public async Task<IActionResult> Post(CProduct obj)
         {
-            if (!product.id.HasValue)
+            if (obj.id.HasValue)
+                return BadRequest("Informacion Redundante (ID)");
+            else
+                return Ok(await obj.Insert());
+        }
+
+
+        [HttpPut("Actualizar")]
+        public async Task<IActionResult> Put(CProduct obj)
+        {
+            if (!obj.id.HasValue)
                 return BadRequest("Informacion de busqueda insuficiente (ID)");
             else
-                return Ok(await product.Update());
+                return Ok(await obj.Update());
         }
     }
 }

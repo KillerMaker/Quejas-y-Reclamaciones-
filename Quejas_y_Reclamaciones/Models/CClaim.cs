@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Data.SqlClient;
 using System.Data;
+using System.ComponentModel.DataAnnotations;
 
 namespace Quejas_y_Reclamaciones.Models
 {
@@ -17,15 +18,21 @@ namespace Quejas_y_Reclamaciones.Models
         public int? id { get; set; }
         public int idPerson { get; set; }
         public int idDepartment { get; set; }
+        [StringLength(8)]
         public string date { get; set; }
+        [StringLength(200)]
         public string description { get; set; }
         public int claimType { get; set; }
         public int idState { get; set; }
 
         //Atributos Opcionales
+        [StringLength(50)]
         public string stateTittle { get; private set; }
+        [StringLength(50)]
         public string complainTypeName { get; private set; }
+        [StringLength(50)]
         public string departmentName { get; private set; }
+        [StringLength(50)]
         public string PersonName { get; set; }
 
         public CClaim(int? id,int idPerson,int idDepartment,string date,string description,int claimType,int idState)

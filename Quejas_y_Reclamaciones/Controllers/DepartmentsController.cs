@@ -13,25 +13,35 @@ namespace Quejas_y_Reclamaciones.Controllers
     public class DepartmentsController : ControllerBase
     {
         [HttpGet("Mostrar/{searchString?}")]
-        public async Task<IActionResult>get(string searchString)
+        public async Task<IActionResult>Get(string searchString)
         {
-            searchString = (searchString != null) ? searchString += "AND ID_ESTADO!=3" : "WHERE ID_ESTADO!=3";
-            return Ok(await CDepartment.Select(null));
+            searchString = (searchString != null) ? searchString += "AND D.ID_ESTADO!=3" : "WHERE D.ID_ESTADO!=3";
+            return Ok(await CDepartment.Select(searchString));
         }
+
+        [HttpGet("Mostrar/{id:int}")]
+        public async Task<IActionResult> Get(int id)
+        {
+            string searchString=$"WHERE D.ID_DEPARTAMENTO ={id}";
+            return Ok(await CDepartment.Select(searchString));
+        }
+
         [HttpPost("Insertar")]
-        public async Task<IActionResult>post(CDepartment department)
+        public async Task<IActionResult>Post(CDepartment obj)
         {
-            return Ok(await department.Insert());
+            return Ok(await obj.Insert());
         }
-        [HttpDelete("Eliminar/{id?:int}")]
-        public async Task<IActionResult> delete(int id)
+
+        [HttpDelete("Eliminar/{id:int}")]
+        public async Task<IActionResult> Delete(int id)
         {
             return Ok(await CDepartment.Delete(id));
         }
+
         [HttpPut("Actualizar")]
-        public async Task<IActionResult> update(CDepartment department)
+        public async Task<IActionResult> Put(CDepartment obj)
         {
-            return Ok(await department.Update());
+            return Ok(await obj.Update());
         }
     }
 }

@@ -4,6 +4,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations;
 
 namespace Quejas_y_Reclamaciones.Models
 {
@@ -13,7 +14,9 @@ namespace Quejas_y_Reclamaciones.Models
         public int employee { get; set; }
         public int? complain { get; set; }
         public int? claim { get; set; }
+        [StringLength(200)]
         public string message { get; set; }
+        [StringLength(8)]
         public string date { get; set; }
 
         private static SqlConnection _connection;
@@ -141,7 +144,7 @@ namespace Quejas_y_Reclamaciones.Models
                         complain,
                         claim,
                         (string)_reader["MENSAJE_RESPUESTA"],
-                        (string)_reader["FECHA_RESPUESTA"]);
+                        _reader["FECHA_RESPUESTA"].ToString());
 
                     answers.Add(answer);
                 }
