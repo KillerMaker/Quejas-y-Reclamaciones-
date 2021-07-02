@@ -86,7 +86,7 @@ namespace Quejas_y_Reclamaciones.Models
                                                 '{email.SQLInyectionClearString()}',
                                                 '{phone.SQLInyectionClearString()}',
                                                 '{genre.SQLInyectionClearString()}',
-                                                '{user.userName.SQLInyectionClearString()}',
+                                                '{user.userName.ToLower().Replace("ñ","n").SQLInyectionClearString()}',
                                                 '{user.password.SQLInyectionClearString()}',
                                                     {user.userType};", _connection);
 
