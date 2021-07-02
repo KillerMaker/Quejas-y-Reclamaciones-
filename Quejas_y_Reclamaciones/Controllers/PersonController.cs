@@ -10,7 +10,7 @@ namespace Quejas_y_Reclamaciones.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class PersonController : ControllerBase
+    public class PersonController : ControllerBase,IController<CPerson>
     {
         [HttpPost("Insertar")]
         public async Task<IActionResult> Post(CPerson obj) 
@@ -45,5 +45,9 @@ namespace Quejas_y_Reclamaciones.Controllers
                 return Ok(await CPerson.Select(searchString));
         }
 
+        public Task<IActionResult> Get(int id)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

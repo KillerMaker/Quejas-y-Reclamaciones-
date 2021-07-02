@@ -10,8 +10,12 @@ namespace Quejas_y_Reclamaciones.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ClaimTypeController : ControllerBase
+    public class ClaimTypeController : ControllerBase,IController<CClaimType>
     {
+        public Task<IActionResult> Delete(int id)
+        {
+            throw new NotImplementedException();
+        }
 
         [HttpGet("Mostrar/{searchString?}")]
         public async Task<IActionResult> Get(string searchString)
@@ -23,6 +27,21 @@ namespace Quejas_y_Reclamaciones.Controllers
                 return BadRequest("Recurso no encontrado");
             else
                 return Ok(list);
+        }
+
+        public Task<IActionResult> Get(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IActionResult> Post(CClaimType obj)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IActionResult> Put(CClaimType obj)
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -10,7 +10,7 @@ namespace Quejas_y_Reclamaciones.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ProductController : ControllerBase
+    public class ProductController : ControllerBase,IController<CProduct>
     {   
         [HttpDelete("Eliminar/{id:int}")]
         public async Task<IActionResult> Delete(int id)

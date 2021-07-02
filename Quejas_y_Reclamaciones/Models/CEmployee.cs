@@ -56,14 +56,14 @@ namespace Quejas_y_Reclamaciones.Models
                 _connection.Open();
 
             _command = new SqlCommand($@"EXEC INSERTA_EMPLEADO
-                                            '{name}',
+                                            '{name.SQLInyectionClearString()}',
                                             '{birthDay}',
-                                            '{idCard}',
-                                            '{email}',
-                                            '{phone}',
-                                            '{genre}',
-                                            '{user.userName}',
-                                            '{user.password}',
+                                            '{idCard.SQLInyectionClearString()}',
+                                            '{email.SQLInyectionClearString()}',
+                                            '{phone.SQLInyectionClearString()}',
+                                            '{genre.SQLInyectionClearString()}',
+                                            '{user.userName.SQLInyectionClearString()}',
+                                            '{user.password.SQLInyectionClearString()}',
                                             {idDepartment};", _connection);
 
             return (await _command.ExecuteNonQueryAsync() != 0) ? this : null;

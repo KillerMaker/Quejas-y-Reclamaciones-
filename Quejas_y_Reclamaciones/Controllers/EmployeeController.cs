@@ -10,7 +10,7 @@ namespace Quejas_y_Reclamaciones.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class EmployeeController : ControllerBase
+    public class EmployeeController : ControllerBase,IController<CEmployee>
     {
         [HttpPost("Insertar")]
         public async Task<IActionResult> Post(CEmployee obj)
@@ -53,12 +53,9 @@ namespace Quejas_y_Reclamaciones.Controllers
         }
 
         [HttpDelete("Eliminar/{id:int}")]
-        public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> Delete(int id)
         {
-            if (!id.HasValue)
-                return BadRequest("Informacion Insuficiente (ID)");
-            else
-                return Ok(await CEmployee.Delete(id.Value));
+            return Ok(await CEmployee.Delete(id));
         }
 
     }

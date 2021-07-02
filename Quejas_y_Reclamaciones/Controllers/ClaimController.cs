@@ -52,12 +52,9 @@ namespace Quejas_y_Reclamaciones.Controllers
         }
 
         [HttpDelete("Eliminar/{id}")]
-        public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> Delete(int id)
         {
-            if (!id.HasValue)
-                return BadRequest("Informacion Insuficiente (ID)");
-            else
-                return Ok(await CClaim.Delete(id.Value));
+           return Ok(await CClaim.Delete(id));
         }
     }
 }

@@ -10,8 +10,13 @@ namespace Quejas_y_Reclamaciones.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ComplainTypeController : ControllerBase
+    public class ComplainTypeController : ControllerBase,IController<CComplainType>
     {
+        public Task<IActionResult> Delete(int id)
+        {
+            throw new NotImplementedException();
+        }
+
         [HttpGet("Mostrar/{searchString?}")]
         public async Task<IActionResult>Get(string searchString)
         {
@@ -24,5 +29,19 @@ namespace Quejas_y_Reclamaciones.Controllers
                 return Ok(list);
         }
 
+        public Task<IActionResult> Get(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IActionResult> Post(CComplainType obj)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IActionResult> Put(CComplainType obj)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

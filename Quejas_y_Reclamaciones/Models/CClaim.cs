@@ -60,7 +60,7 @@ namespace Quejas_y_Reclamaciones.Models
                                                 {idPerson},
                                                 {idDepartment},
                                                 '{date}',
-                                                '{description}',
+                                                '{description.SQLInyectionClearString()}',
                                                 {claimType},
                                                 {idState};", _connection);
 
@@ -82,7 +82,7 @@ namespace Quejas_y_Reclamaciones.Models
 
                 _command = new SqlCommand($@"UPDATE RECLAMACION SET
                                                 ID_DEPARTAMENTO = {idDepartment},
-                                                DESCRIPCION_RECLAMACION = '{description}',
+                                                DESCRIPCION_RECLAMACION = '{description.SQLInyectionClearString()}',
                                                 ID_TIPO_RECLAMACION = {claimType},
                                                 ID_ESTADO = {idState}
                                             WHERE ID_RECLAMACION ={id};", _connection);

@@ -41,8 +41,8 @@ namespace Quejas_y_Reclamaciones.Models
                    await _connection.OpenAsync();
 
                 _command = new SqlCommand($@"EXEC INSERTA_TIPO_QUEJA
-                                                    '{description}',
-                                                    '{tittle}',
+                                                    '{description.SQLInyectionClearString()}',
+                                                    '{tittle.SQLInyectionClearString()}',
                                                     {stateId};", _connection);
 
                 return (await _command.ExecuteNonQueryAsync() != 0) ? 1 : 0;
@@ -62,8 +62,8 @@ namespace Quejas_y_Reclamaciones.Models
                    await _connection.OpenAsync();
 
                 _command = new SqlCommand($@"UPDATE TIPO_QUEJA SET 
-                                                DESCRIPCION_QUEJA={description},
-                                                TITULO_QUEJA ={tittle},
+                                                DESCRIPCION_QUEJA={description.SQLInyectionClearString()},
+                                                TITULO_QUEJA ={tittle.SQLInyectionClearString()},
                                                 ID_ESTADO = {stateId}
                                                 WHERE ID_QUEJA={id};", _connection);
 

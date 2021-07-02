@@ -35,7 +35,6 @@ namespace Quejas_y_Reclamaciones.Models
 
         public async override Task<int> Insert()
         {
-            
             try
             {
 
@@ -43,8 +42,8 @@ namespace Quejas_y_Reclamaciones.Models
                     _connection.Open();
 
                 _command = new SqlCommand($@"EXEC INSERTA_TIPO_RECLAMACION
-                                                    '{description}',
-                                                    '{tittle}',
+                                                    '{description.SQLInyectionClearString()}',
+                                                    '{tittle.SQLInyectionClearString()}',
                                                     {stateId};", _connection);
 
                 return (await _command.ExecuteNonQueryAsync() != 0 ? 1 : 0);
@@ -63,8 +62,8 @@ namespace Quejas_y_Reclamaciones.Models
                     await _connection.OpenAsync();
 
                 _command = new SqlCommand($@"UPDATE TIPO_RECLAMACION SET 
-                                                DESCRIPCION_RECLAMACION={description},
-                                                TITULO_RECLAMACION ={tittle},
+                                                DESCRIPCION_RECLAMACION={description.SQLInyectionClearString()},
+                                                TITULO_RECLAMACION ={tittle.SQLInyectionClearString()},
                                                 ID_ESTADO = {stateId}
                                                 WHERE ID_TIPO_RECLAMACION={id};", _connection);
 

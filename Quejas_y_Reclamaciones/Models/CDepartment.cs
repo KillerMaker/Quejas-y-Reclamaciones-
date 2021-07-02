@@ -43,7 +43,7 @@ namespace Quejas_y_Reclamaciones.Models
 
 
                 _command = new SqlCommand($@"EXEC INSERTA_DEPARTAMENTO 
-                                                    '{departmentName}'
+                                                    '{departmentName.SQLInyectionClearString()}'
                                                     ,{managerId};",_connection);
 
                 return (await _command.ExecuteNonQueryAsync() != 0) ? 1 : 0;

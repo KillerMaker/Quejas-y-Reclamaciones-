@@ -10,7 +10,7 @@ namespace Quejas_y_Reclamaciones.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ComplainController : ControllerBase
+    public class ComplainController : ControllerBase,IController<CComplain>
     {
         [HttpPost("Insertar")]
         public async Task<IActionResult> Post(CComplain obj)
@@ -31,12 +31,9 @@ namespace Quejas_y_Reclamaciones.Controllers
         }
 
         [HttpDelete("Eliminar/{id:int}")]
-        public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> Delete(int id)
         {
-            if (!id.HasValue)
-                return BadRequest("Informacion Insuficiente de la queja (ID)");
-            else
-                return Ok(await CComplain.Delete(id.Value));
+            return Ok(await CComplain.Delete(id));
         }
 
         [HttpGet("Mostrar")]

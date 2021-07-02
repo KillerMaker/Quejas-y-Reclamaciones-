@@ -48,9 +48,9 @@ namespace Quejas_y_Reclamaciones.Models
                 await _connection.OpenAsync();
 
                 if (claim.HasValue)
-                    _command = new SqlCommand($@"EXEC INSERTA_RESPUESTA_QUEJA {employee},{claim},'{message}','{date}'", _connection);
+                    _command = new SqlCommand($@"EXEC INSERTA_RESPUESTA_QUEJA {employee},{claim},'{message.SQLInyectionClearString()}','{date}'", _connection);
                 else if (complain.HasValue)
-                    _command = new SqlCommand($@"EXEC INSERTA_RESPUESTA_RECLAMACION {employee},{complain},'{message}','{date}'", _connection);
+                    _command = new SqlCommand($@"EXEC INSERTA_RESPUESTA_RECLAMACION {employee},{complain},'{message.SQLInyectionClearString()}','{date}'", _connection);
                 else if (!complain.HasValue && !claim.HasValue)
                     return 0;
 
@@ -79,7 +79,7 @@ namespace Quejas_y_Reclamaciones.Models
                                             SET ID_EMPLADO={employee},
                                                 ID_QUEJA={complain},
                                                 ID_RECLAMACION={claim},
-                                                MENSAJE_RESPUESTA='{message}'
+                                                MENSAJE_RESPUESTA='{message.SQLInyectionClearString()}'
                                             WHERE ID_RESPUESTA={id.Value}", _connection);
 
                 return (await _command.ExecuteNonQueryAsync() != 0) ? id.Value : 0;

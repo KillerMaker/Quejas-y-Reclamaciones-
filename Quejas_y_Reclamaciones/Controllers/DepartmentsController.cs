@@ -10,7 +10,7 @@ namespace Quejas_y_Reclamaciones.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class DepartmentsController : ControllerBase
+    public class DepartmentsController : ControllerBase,IController<CDepartment>
     {
         [HttpGet("Mostrar/{searchString?}")]
         public async Task<IActionResult>Get(string searchString)

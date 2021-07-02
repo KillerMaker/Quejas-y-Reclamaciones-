@@ -10,15 +10,15 @@ namespace Quejas_y_Reclamaciones.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AnswerController : ControllerBase
+    public class AnswerController : ControllerBase,IController<CAnswer>
     {
         [HttpPost("Insertar")]
-        public async Task<IActionResult> Post(CAnswer answer)
+        public async Task<IActionResult> Post(CAnswer obj)
         {
-            if (answer.id.HasValue)
+            if (obj.id.HasValue)
                 return BadRequest("Informacion redundante (ID)");
             else
-                return Ok(await answer.Insert());
+                return Ok(await obj.Insert());
         }
 
         [HttpGet("Mostrar")]
@@ -43,21 +43,18 @@ namespace Quejas_y_Reclamaciones.Controllers
         }
 
         [HttpPut("Actualizar")]
-        public async Task<IActionResult> Put(CAnswer answer)
+        public async Task<IActionResult> Put(CAnswer obj)
         {
-            if (!answer.id.HasValue)
+            if (!obj.id.HasValue)
                 return BadRequest("Informacion Insuficiente (ID)");
             else
-                return Ok(await answer.Update());
+                return Ok(await obj.Update());
         }
 
         [HttpDelete("Eliminar/{id}")]
-        public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> Delete(int id)
         {
-            if (!id.HasValue)
-                return BadRequest("Informacion Insuficiente (ID)");
-            else
-                return Ok(await CAnswer.Delete(id.Value));
+           return Ok(await CAnswer.Delete(id));
         }
     }
 }
