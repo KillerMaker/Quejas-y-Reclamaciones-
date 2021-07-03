@@ -10,10 +10,10 @@ namespace Quejas_y_Reclamaciones.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class DepartmentsController : ControllerBase,IController<CDepartment>
+    public class DepartmentsController : ControllerBase, IController<CDepartment>
     {
         [HttpGet("Mostrar/{searchString?}")]
-        public async Task<IActionResult>Get(string searchString)
+        public async Task<IActionResult> Get(string searchString)
         {
             searchString = (searchString != null) ? searchString += "AND D.ID_ESTADO!=3" : "WHERE D.ID_ESTADO!=3";
             return Ok(await CDepartment.Select(searchString));
@@ -22,12 +22,12 @@ namespace Quejas_y_Reclamaciones.Controllers
         [HttpGet("Mostrar/{id:int}")]
         public async Task<IActionResult> Get(int id)
         {
-            string searchString=$"WHERE D.ID_DEPARTAMENTO ={id}";
+            string searchString = $"WHERE D.ID_DEPARTAMENTO ={id}";
             return Ok(await CDepartment.Select(searchString));
         }
 
         [HttpPost("Insertar")]
-        public async Task<IActionResult>Post(CDepartment obj)
+        public async Task<IActionResult> Post(CDepartment obj)
         {
             return Ok(await obj.Insert());
         }
@@ -40,8 +40,6 @@ namespace Quejas_y_Reclamaciones.Controllers
 
         [HttpPut("Actualizar")]
         public async Task<IActionResult> Put(CDepartment obj)
-        {
-            return Ok(await obj.Update());
-        }
+            => (obj.id.HasValue) ? Ok(await obj.Update()) : BadRequest("Id invalido");
     }
 }
