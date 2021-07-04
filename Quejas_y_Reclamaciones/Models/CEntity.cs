@@ -25,14 +25,8 @@ namespace Quejas_y_Reclamaciones.Models
 
         protected static void setConnection()
         {
-<<<<<<< HEAD
             //_connection = new SqlConnection("Data Source=DESKTOP-T76LFOU;Initial Catalog=Quejas&Reclamaciones;Integrated Security=True");
             connection = new SqlConnection("Data Source=DESKTOP-7V51383\\SQLEXPRESS;Initial Catalog=Quejas&Reclamaciones;Integrated Security=True");
-=======
-            connection = new SqlConnection("Data Source=DESKTOP-T76LFOU;Initial Catalog=Quejas&Reclamaciones;Integrated Security=True");
-            //connection = new SqlConnection("Data Source=DESKTOP-7V51383\\SQLEXPRESS;Initial Catalog=Quejas&Reclamaciones;Integrated Security=True");
-
->>>>>>> f8fefd9a3fa95fa8ac15e2d1ae8e9fd4a2f51b3a
         }
     }
 }
