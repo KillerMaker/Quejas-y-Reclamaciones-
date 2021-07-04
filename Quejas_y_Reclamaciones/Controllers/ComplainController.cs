@@ -46,7 +46,7 @@ namespace Quejas_y_Reclamaciones.Controllers
             else
                 return Ok(await CComplain.Select(searchString));
         }
-        [HttpGet("Mostrar/{id?}")]
+        [HttpGet("Mostrar/{id:int}")]
         public async Task<IActionResult> Get(int id)
         {
           string searchString = $"WHERE ID_PERSONA= {id} AND ID_ESTADO !=3";

@@ -88,6 +88,7 @@ namespace Quejas_y_Reclamaciones.Models
                     _connection.Open();
 
                 _command = new SqlCommand($@"UPDATE QUEJA SET
+                                            ID_DEPARTAMENTO ={idDepartment},
                                             DESCRIPCION_QUEJA = '{description.SQLInyectionClearString()}',
                                             ID_TIPO_QUEJA = {idComplainType},
                                             ID_ESTADO = {idState}
