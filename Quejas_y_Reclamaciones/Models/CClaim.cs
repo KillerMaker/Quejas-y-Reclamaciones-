@@ -29,7 +29,7 @@ namespace Quejas_y_Reclamaciones.Models
         [StringLength(50)]
         public string stateTittle { get; private set; }
         [StringLength(50)]
-        public string complainTypeName { get; private set; }
+        public string claimTypeName { get; private set; }
         [StringLength(50)]
         public string departmentName { get; private set; }
         [StringLength(50)]
@@ -152,7 +152,7 @@ namespace Quejas_y_Reclamaciones.Models
                     {
                         stateTittle = _reader["TITULO_ESTADO"].ToString(),
                         departmentName = _reader["NOMBRE_DEPARTAMENTO"].ToString(),
-                        complainTypeName = _reader["TITULO_RECLAMACION"].ToString(),
+                        claimTypeName = _reader["TITULO_RECLAMACION"].ToString(),
                         PersonName=_reader["NOMBRE_PERSONA"].ToString()
                     };
 
