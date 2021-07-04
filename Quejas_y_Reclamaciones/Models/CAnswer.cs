@@ -20,6 +20,8 @@ namespace Quejas_y_Reclamaciones.Models
         public string date { get; set; }
 
         public string employeeName { get; set; } 
+        public string claimPerson { get; set; }
+        public string complainPerson { get; set; }
 
         private static SqlConnection _connection;
         private static SqlCommand _command;
@@ -147,7 +149,9 @@ namespace Quejas_y_Reclamaciones.Models
                         claim,
                         (string)_reader["MENSAJE_RESPUESTA"],
                         _reader["FECHA_RESPUESTA"].ToString())
-                    { employeeName=(string)_reader["NOMBRE_EMPLEADO"]};
+                    { employeeName=(string)_reader["NOMBRE_EMPLEADO"],
+                      claimPerson=(string)_reader["NOMBRE_PERSONA_RECLAMACION"],
+                      complainPerson=(string)_reader["NOMBRE_PERSONA_QUEJA"]};
 
                     answers.Add(answer);
                 }
