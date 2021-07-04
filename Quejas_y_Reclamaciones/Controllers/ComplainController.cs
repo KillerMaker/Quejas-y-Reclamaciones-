@@ -36,7 +36,7 @@ namespace Quejas_y_Reclamaciones.Controllers
             return Ok(await CComplain.Delete(id));
         }
 
-        [HttpGet("Mostrar")]
+        [HttpGet("Mostrar/{searchString?}")]
         public async Task<IActionResult> Get(string searchString)
         {
             searchString = (searchString != null) ? searchString += "AND ID_ESTADO!=3" : "WHERE ID_ESTADO=3";
@@ -51,6 +51,17 @@ namespace Quejas_y_Reclamaciones.Controllers
         {
           string searchString = $"WHERE ID_PERSONA= {id} AND ID_ESTADO !=3";
           return  Ok(await CComplain.Select(searchString));
+        }
+
+        [HttpGet("MostrarPorQueja/{id:int}")]
+        public async Task<IActionResult> GetByComplaintId(int id)
+        {
+            string searchString = $"WHERE ID_QUEJA={id} AND ID_ESTADO!=3";
+
+            if (CComplain.Select(searchString).Result.Count.Equals(0))
+                return NotFound("Recurso no encontrado");
+            else
+                return Ok(await CComplain.Select(searchString));
         }
     }
 }

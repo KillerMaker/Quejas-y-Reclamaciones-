@@ -21,7 +21,7 @@ namespace Quejas_y_Reclamaciones.Controllers
                 return Ok(await obj.Insert());
         }
         
-        [HttpGet("Mostrar")]
+        [HttpGet("Mostrar/{searchString?}")]
         public async Task<IActionResult> Get(string searchString)
         {
             searchString = (searchString != null) ? searchString += "AND ID_ESTADO!=3" : "WHERE ID_ESTADO=3";
@@ -31,6 +31,7 @@ namespace Quejas_y_Reclamaciones.Controllers
             else
                 return Ok(await CClaim.Select(searchString));
         }
+
         [HttpGet("Mostrar/{id:int}")]
         public async Task<IActionResult> Get(int id)
         {
@@ -55,6 +56,17 @@ namespace Quejas_y_Reclamaciones.Controllers
         public async Task<IActionResult> Delete(int id)
         {
            return Ok(await CClaim.Delete(id));
+        }
+
+        [HttpGet("MostrarPorReclamacion/{id:int}")]
+        public async Task<IActionResult> GetByReclaimId(int id)
+        {
+            string searchString = $"WHERE ID_RECLAMACION={id} AND ID_ESTADO!=3";
+
+            if (CClaim.Select(searchString).Result.Count.Equals(0))
+                return NotFound("Recurso no encontrado");
+            else
+                return Ok(await CClaim.Select(searchString));
         }
     }
 }

@@ -47,9 +47,9 @@ namespace Quejas_y_Reclamaciones.Models
 
                 await _connection.OpenAsync();
 
-                if (claim.HasValue)
+                if (complain.HasValue)
                     _command = new SqlCommand($@"EXEC INSERTA_RESPUESTA_QUEJA {employee},{claim},'{message.SQLInyectionClearString()}','{date}'", _connection);
-                else if (complain.HasValue)
+                else if (claim.HasValue)
                     _command = new SqlCommand($@"EXEC INSERTA_RESPUESTA_RECLAMACION {employee},{complain},'{message.SQLInyectionClearString()}','{date}'", _connection);
                 else if (!complain.HasValue && !claim.HasValue)
                     return 0;

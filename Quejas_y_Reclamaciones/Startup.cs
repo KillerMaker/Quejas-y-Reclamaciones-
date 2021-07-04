@@ -39,7 +39,7 @@ namespace Quejas_y_Reclamaciones
             {
                 endpoints.MapGet("/", async context =>
                 {
-                    await context.Response.WriteAsync("Hello World!");
+                    await context.Response.WriteAsync("Manuel MMG");
                 });
                 endpoints.MapControllers();
             });

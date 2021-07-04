@@ -31,6 +31,29 @@ namespace Quejas_y_Reclamaciones.Controllers
             else
                 return Ok(await CAnswer.Select(searchString));
         }
+        [HttpGet("MostrarQueja")]
+        public async Task<IActionResult> GetClaim(string searchString)
+        {
+            // searchString = (searchString != null) ? searchString += "AND ID_ESTADO!=3" : "WHERE ID_ESTADO=3";
+            searchString = "WHERE ID_QUEJA > 0";
+
+            if (CAnswer.Select(searchString).Result.Count.Equals(0))
+                return NotFound("Recurso no encontrado");
+            else
+                return Ok(await CAnswer.Select(searchString));
+        }
+
+        [HttpGet("MostrarReclamacion")]
+        public async Task<IActionResult> GetComplain(string searchString)
+        {
+            // searchString = (searchString != null) ? searchString += "AND ID_ESTADO!=3" : "WHERE ID_ESTADO=3";
+            searchString = "WHERE ID_RECLAMACION > 0";
+
+            if (CAnswer.Select(searchString).Result.Count.Equals(0))
+                return NotFound("Recurso no encontrado");
+            else
+                return Ok(await CAnswer.Select(searchString));
+        }
         [HttpGet("Mostrar/{id:int}")]
         public async Task<IActionResult> Get(int id)
         {
