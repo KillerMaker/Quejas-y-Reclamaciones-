@@ -55,9 +55,26 @@ namespace Quejas_y_Reclamaciones.Models
             }
         }
 
-        public override Task<int> Update()
+        public async override Task<int> Update()
         {
-            throw new NotImplementedException();
+            try
+            {
+                if (_connection.State.Equals(ConnectionState.Closed))
+                    await _connection.OpenAsync();
+
+
+                _command = new SqlCommand($@"UPDATE DEPARTAMENTO SET
+                                            NOMBRE_DEPARTAMENTO = '{departmentName.SQLInyectionClearString()}', 
+                                            ID_ENCARGADO = '{managerId}'
+                                            WHERE ID_DEPARTAMENTO = {id.Value}", _connection);
+
+                return (await _command.ExecuteNonQueryAsync() != 0) ? id.Value : 0;
+
+            }
+            catch (Exception ex)
+            {
+                throw new NotSupportedException(ex.Message);
+            }
         }
 
         public async static Task<List<CDepartment>> Select(string searchString)
