@@ -12,9 +12,10 @@ namespace Quejas_y_Reclamaciones.Controllers
     [ApiController]
     public class ComplainTypeController : ControllerBase,IController<CComplainType>
     {
+        [HttpDelete("Eliminar/{id:int}")]
         public async Task<IActionResult> Delete(int id)
         {
-            return Ok(await CComplain.Delete(id));
+            return Ok(await CComplainType.Delete(id));
         }
 
         [HttpGet("Mostrar/{searchString?}")]
@@ -28,20 +29,20 @@ namespace Quejas_y_Reclamaciones.Controllers
             else
                 return Ok(list);
         }
-
-        public Task<IActionResult> Get(int id)
+        [HttpGet("Mostrar/{id:int}")]
+        public async Task<IActionResult> Get(int id)
         {
-            throw new NotImplementedException();
+            return CComplainType.Select($"WHERE ID_TIPO_QUEJA = {id}").Result.Count.Equals(0) ? BadRequest(): Ok(await CComplainType.Select($"WHERE ID_TIPO_QUEJA = {id}"));
         }
-
-        public Task<IActionResult> Post(CComplainType obj)
+        [HttpPost("Insertar")]
+        public async Task<IActionResult> Post(CComplainType obj)
         {
-            throw new NotImplementedException();
+            return Ok(await obj.Insert());
         }
-
-        public Task<IActionResult> Put(CComplainType obj)
+        [HttpPut("Actualizar")]
+        public async Task<IActionResult> Put(CComplainType obj)
         {
-            throw new NotImplementedException();
+            return Ok(await obj.Update());
         }
     }
 }

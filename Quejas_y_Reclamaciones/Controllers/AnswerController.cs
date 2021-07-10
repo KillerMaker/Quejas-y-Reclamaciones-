@@ -31,11 +31,11 @@ namespace Quejas_y_Reclamaciones.Controllers
             else
                 return Ok(await CAnswer.Select(searchString));
         }
-        [HttpGet("MostrarQueja")]
-        public async Task<IActionResult> GetClaim(string searchString)
+        [HttpGet("MostrarQueja/{id:int}")]
+        public async Task<IActionResult> GetClaim(int id)
         {
             // searchString = (searchString != null) ? searchString += "AND ID_ESTADO!=3" : "WHERE ID_ESTADO=3";
-            searchString = "WHERE ID_QUEJA > 0";
+            string searchString = $"WHERE ID_QUEJA > 0 AND ID_PERSONA_QUEJA = {id}";
 
             if (CAnswer.Select(searchString).Result.Count.Equals(0))
                 return NotFound("Recurso no encontrado");
@@ -43,11 +43,11 @@ namespace Quejas_y_Reclamaciones.Controllers
                 return Ok(await CAnswer.Select(searchString));
         }
 
-        [HttpGet("MostrarReclamacion")]
-        public async Task<IActionResult> GetComplain(string searchString)
+        [HttpGet("MostrarReclamacion/{id:int}")]
+        public async Task<IActionResult> GetComplain(int id)
         {
             // searchString = (searchString != null) ? searchString += "AND ID_ESTADO!=3" : "WHERE ID_ESTADO=3";
-            searchString = "WHERE ID_RECLAMACION > 0";
+            string searchString = $"WHERE ID_RECLAMACION > 0 AND ID_PERSONA_RECLAMACION = {id}";
 
             if (CAnswer.Select(searchString).Result.Count.Equals(0))
                 return NotFound("Recurso no encontrado");

@@ -22,6 +22,8 @@ namespace Quejas_y_Reclamaciones.Models
         public string description { get; set; }
         public int stateId { get; set; }
 
+        public string stateName { get; set; }
+
         public CClaimType(int? id, string tittle, string description, int stateId)
         {
             this.id = id;
@@ -62,8 +64,8 @@ namespace Quejas_y_Reclamaciones.Models
                     await _connection.OpenAsync();
 
                 _command = new SqlCommand($@"UPDATE TIPO_RECLAMACION SET 
-                                                DESCRIPCION_RECLAMACION={description.SQLInyectionClearString()},
-                                                TITULO_RECLAMACION ={tittle.SQLInyectionClearString()},
+                                                DESCRIPCION_RECLAMACION='{description.SQLInyectionClearString()}',
+                                                TITULO_RECLAMACION ='{tittle.SQLInyectionClearString()}',
                                                 ID_ESTADO = {stateId}
                                                 WHERE ID_TIPO_RECLAMACION={id};", _connection);
 
@@ -92,7 +94,8 @@ namespace Quejas_y_Reclamaciones.Models
                 List<CClaimType> ClaimTypes = new List<CClaimType>();
                 CClaimType ClaimType;
 
-                _command = new SqlCommand($"SELECT * FROM TIPO_RECLAMACION {searchString}", _connection);
+                _command = new SqlCommand($@"SELECT * FROM TIPO_RECLAMACION R 
+                                            INNER JOIN ESTADO E ON E.ID_ESTADO = R.ID_ESTADO {searchString}", _connection);
 
                 _reader = _command.ExecuteReader();
 
@@ -103,7 +106,8 @@ namespace Quejas_y_Reclamaciones.Models
                                         _reader["TITULO_RECLAMACION"].ToString(),
                                         _reader["DESCRIPCION_RECLAMACION"].ToString(),
                                         int.Parse(_reader["ID_ESTADO"].ToString())
-                        );
+                        )
+                    { stateName = _reader["TITULO_ESTADO"].ToString() };
                     ClaimTypes.Add(ClaimType);
                 }
 
@@ -120,10 +124,12 @@ namespace Quejas_y_Reclamaciones.Models
         {
             try
             {
+                setConnection();
+                _connection = connection;
                 if (_connection.State.Equals(ConnectionState.Closed))
                     await _connection.OpenAsync();
 
-                _command = new SqlCommand($@"DELETE FROM TIPO_RECLAMACION WHERE ID ={id}", _connection);
+                _command = new SqlCommand($@"DELETE FROM TIPO_RECLAMACION WHERE ID_TIPO_RECLAMACION ={id}", _connection);
 
                 return (await _command.ExecuteNonQueryAsync() != 0) ? id : 0;
             }

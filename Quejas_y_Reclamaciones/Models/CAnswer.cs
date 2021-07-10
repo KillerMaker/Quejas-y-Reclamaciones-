@@ -25,6 +25,10 @@ namespace Quejas_y_Reclamaciones.Models
 
         public string departmentName { get; set; }
 
+        public string complaintDepartment { get; set; }
+
+        public string claimDepartment { get; set; }
+
         private static SqlConnection _connection;
         private static SqlCommand _command;
         private static SqlDataReader _reader;
@@ -54,9 +58,9 @@ namespace Quejas_y_Reclamaciones.Models
                 await _connection.OpenAsync();
 
                 if (complain.HasValue)
-                    _command = new SqlCommand($@"EXEC INSERTA_RESPUESTA_QUEJA {employee},{claim},'{message.SQLInyectionClearString()}','{date}'", _connection);
+                    _command = new SqlCommand($@"EXEC INSERTA_RESPUESTA_QUEJA {employee},{complain},'{message.SQLInyectionClearString()}','{date}'", _connection);
                 else if (claim.HasValue)
-                    _command = new SqlCommand($@"EXEC INSERTA_RESPUESTA_RECLAMACION {employee},{complain},'{message.SQLInyectionClearString()}','{date}'", _connection);
+                    _command = new SqlCommand($@"EXEC INSERTA_RESPUESTA_RECLAMACION {employee},{claim},'{message.SQLInyectionClearString()}','{date}'", _connection);
                 else if (!complain.HasValue && !claim.HasValue)
                     return 0;
 
@@ -154,7 +158,10 @@ namespace Quejas_y_Reclamaciones.Models
                     { employeeName=(string)_reader["NOMBRE_EMPLEADO"],
                       claimPerson=_reader["NOMBRE_PERSONA_RECLAMACION"].ToString(),
                       complainPerson=_reader["NOMBRE_PERSONA_QUEJA"].ToString(),
-                      departmentName=(string)_reader["NOMBRE_DEPARTAMENTO"]};
+                      departmentName=(string)_reader["NOMBRE_DEPARTAMENTO"],
+                      claimDepartment=_reader["NOMBRE_DEPARTAMENTO_RECLAMACION"].ToString(),
+                      complaintDepartment=_reader["NOMBRE_DEPARTAMENTO_QUEJA"].ToString()
+                    };
 
                     answers.Add(answer);
                 }

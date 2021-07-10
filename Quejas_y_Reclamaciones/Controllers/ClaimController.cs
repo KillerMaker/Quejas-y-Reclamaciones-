@@ -35,7 +35,7 @@ namespace Quejas_y_Reclamaciones.Controllers
         [HttpGet("Mostrar/{id:int}")]
         public async Task<IActionResult> Get(int id)
         {
-            string searchString = $"WHERE ID_PERSONA={id} AND ID_ESTADO!=3";
+            string searchString = $"WHERE ID_PERSONA={id} AND ID_ESTADO!=3 AND ID_ESTADO != 6";
 
             if (CClaim.Select(searchString).Result.Count.Equals(0))
                 return NotFound("Recurso no encontrado");
