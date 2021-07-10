@@ -12,9 +12,9 @@ namespace Quejas_y_Reclamaciones.Controllers
     [ApiController]
     public class ComplainTypeController : ControllerBase,IController<CComplainType>
     {
-        public Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            throw new NotImplementedException();
+            return Ok(await CComplain.Delete(id));
         }
 
         [HttpGet("Mostrar/{searchString?}")]

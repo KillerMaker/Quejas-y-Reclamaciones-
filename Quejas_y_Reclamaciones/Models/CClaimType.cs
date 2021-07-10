@@ -115,6 +115,24 @@ namespace Quejas_y_Reclamaciones.Models
             }
             
         }
+
+        public async static Task<int> Delete(int id)
+        {
+            try
+            {
+                if (_connection.State.Equals(ConnectionState.Closed))
+                    await _connection.OpenAsync();
+
+                _command = new SqlCommand($@"DELETE FROM TIPO_RECLAMACION WHERE ID ={id}", _connection);
+
+                return (await _command.ExecuteNonQueryAsync() != 0) ? id : 0;
+            }
+            catch (Exception ex)
+            {
+
+                throw new NotSupportedException(ex.Message);
+            }
+        }
     }
 }
 

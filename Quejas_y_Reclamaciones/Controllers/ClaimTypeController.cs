@@ -12,9 +12,10 @@ namespace Quejas_y_Reclamaciones.Controllers
     [ApiController]
     public class ClaimTypeController : ControllerBase,IController<CClaimType>
     {
-        public Task<IActionResult> Delete(int id)
+        [HttpDelete("Eliminar/{id:int}")]
+        public async Task<IActionResult> Delete(int id)
         {
-            throw new NotImplementedException();
+            return Ok(await CClaimType.Delete(id));
         }
 
         [HttpGet("Mostrar/{searchString?}")]
@@ -29,19 +30,30 @@ namespace Quejas_y_Reclamaciones.Controllers
                 return Ok(list);
         }
 
-        public Task<IActionResult> Get(int id)
+        [HttpGet("Mostrar/{id:int}")]
+        public async Task<IActionResult> Get(int id)
         {
-            throw new NotImplementedException();
+            string searchString = $"WHERE ID_TIPO_RECLAMACION ={id}";
+
+            List<CClaimType> list = new List<CClaimType>();
+
+            list = await CClaimType.Select(searchString);
+            if (list.Count.Equals(0))
+                return BadRequest("Recurso no encontrado");
+            else
+                return Ok(list);
         }
 
-        public Task<IActionResult> Post(CClaimType obj)
+        [HttpPost("Insertar")]
+        public async Task<IActionResult> Post(CClaimType obj)
         {
-            throw new NotImplementedException();
+            return Ok(await obj.Insert());
         }
 
-        public Task<IActionResult> Put(CClaimType obj)
+        [HttpPut("Actualizar")]
+        public async Task<IActionResult> Put(CClaimType obj)
         {
-            throw new NotImplementedException();
+            return Ok(await obj.Update());
         }
     }
 }
