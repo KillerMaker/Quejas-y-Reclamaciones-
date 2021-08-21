@@ -29,11 +29,13 @@ namespace Quejas_y_Reclamaciones.Models
 
         public string claimDepartment { get; set; }
 
+        public int rating { get; set; }
+
         private static SqlConnection _connection;
         private static SqlCommand _command;
         private static SqlDataReader _reader;
 
-        public CAnswer(int? id,int employee,int? complain,int? claim,string message,string date)
+        public CAnswer(int? id,int employee,int? complain,int? claim,string message,string date, int rating = 0)
         {
             this.id = id;
             this.employee = employee;
@@ -41,6 +43,7 @@ namespace Quejas_y_Reclamaciones.Models
             this.claim = claim;
             this.message = message;
             this.date = date;
+            this.rating = rating;
 
             setConnection();
             _connection = connection;
@@ -85,10 +88,9 @@ namespace Quejas_y_Reclamaciones.Models
 
                 await _connection.OpenAsync();
 
-                _command = new SqlCommand($@"UPDATE RESPUESTA SET
-                                            SET ID_EMPLADO={employee},
-                                                ID_QUEJA={complain},
-                                                ID_RECLAMACION={claim},
+                _command = new SqlCommand($@"UPDATE RESPUESTA
+                                            SET ID_EMPLEADO={employee},
+                                                RATING={rating},
                                                 MENSAJE_RESPUESTA='{message.SQLInyectionClearString()}'
                                             WHERE ID_RESPUESTA={id.Value}", _connection);
 
@@ -155,12 +157,13 @@ namespace Quejas_y_Reclamaciones.Models
                         claim,
                         (string)_reader["MENSAJE_RESPUESTA"],
                         _reader["FECHA_RESPUESTA"].ToString())
-                    { employeeName=(string)_reader["NOMBRE_EMPLEADO"],
-                      claimPerson=_reader["NOMBRE_PERSONA_RECLAMACION"].ToString(),
-                      complainPerson=_reader["NOMBRE_PERSONA_QUEJA"].ToString(),
-                      departmentName=(string)_reader["NOMBRE_DEPARTAMENTO"],
-                      claimDepartment=_reader["NOMBRE_DEPARTAMENTO_RECLAMACION"].ToString(),
-                      complaintDepartment=_reader["NOMBRE_DEPARTAMENTO_QUEJA"].ToString()
+                    { employeeName = (string)_reader["NOMBRE_EMPLEADO"],
+                        claimPerson = _reader["NOMBRE_PERSONA_RECLAMACION"].ToString(),
+                        complainPerson = _reader["NOMBRE_PERSONA_QUEJA"].ToString(),
+                        departmentName = (string)_reader["NOMBRE_DEPARTAMENTO"],
+                        claimDepartment = _reader["NOMBRE_DEPARTAMENTO_RECLAMACION"].ToString(),
+                        complaintDepartment = _reader["NOMBRE_DEPARTAMENTO_QUEJA"].ToString(),
+                        rating = int.Parse(_reader["RATING"].ToString())
                     };
 
                     answers.Add(answer);
